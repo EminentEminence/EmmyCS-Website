@@ -4329,3 +4329,127 @@
 [2026-01-20 15:05:45] Added card: Martial Law
 [2026-01-20 15:05:45] Finished reading cardData.txt, total rows processed: 5
 [2026-01-20 15:05:45] Loaded card details for: Imperators Protection
+[2026-01-26 15:49:54] Starting to read cardData.txt from folder: cards/Secret Lairs/Cerydra + Hysilens
+[2026-01-26 15:49:54] Header row read: Name | Mana Cost | Type | Rarity | Rules Text | Flavor Text | Power | Toughness | Loyalty | Illustrator | Card Number | Notes | Name 2 | Mana Cost 2 | Type 2 | Rules Text 2 | Flavor Text 2 | Power 2 | Toughness 2 | Loyalty 2 | Illustrator 2 | Card Number 2 | Notes | 
+[2026-01-26 15:49:54] First card parsed: Cerydra, Supreme Commander
+[2026-01-26 15:49:54] Processing card #1: Cerydra Supreme Commander
+[2026-01-26 15:49:54] Added card: Cerydra Supreme Commander
+[2026-01-26 15:49:54] Processing card #2: Hysilens Knight Commander
+[2026-01-26 15:49:54] Added card: Hysilens Knight Commander
+[2026-01-26 15:49:54] Processing card #3: Imperators Protection
+[2026-01-26 15:49:54] Added card: Imperators Protection
+[2026-01-26 15:49:54] Processing card #4: Rule of Law
+[2026-01-26 15:49:54] Added card: Rule of Law
+[2026-01-26 15:49:54] Processing card #5: Martial Law
+[2026-01-26 15:49:54] Added card: Martial Law
+[2026-01-26 15:49:54] Finished reading cardData.txt, total rows processed: 5
+[2026-01-26 15:49:54] Loaded card details for: Hysilens Knight Commander
+[2026-01-26 21:35:49] Starting to read cardData.txt from folder: cards/Sets/Universes Beyond - Hoyoverse
+[2026-01-26 21:35:49] Header row read: Name | Mana Cost | Type | Rarity | Rules Text | Flavor Text | Power | Toughness | Loyalty | Illustrator | Card Number | Notes | Name 2 | Mana Cost 2 | Type 2 | Rules Text 2 | Flavor Text 2 | Power 2 | Toughness 2 | Loyalty 2 | Illustrator 2 | Card Number 2 | Notes | 
+[2026-01-26 21:35:49] First card parsed: Cerydra, Imperator
+[2026-01-26 21:35:49] Processing card #1: Cerydra Imperator
+[2026-01-26 21:35:49] Added card: Cerydra Imperator
+[2026-01-26 21:35:49] Processing card #2: Cerydra Imperator
+[2026-01-26 21:35:49] Added card: Cerydra Imperator
+[2026-01-26 21:35:49] Processing card #3: Phainon The Deliverer
+[2026-01-26 21:35:49] Added card: Phainon The Deliverer
+[2026-01-26 21:35:49] Processing card #4: Castorice Maiden of War
+[2026-01-26 21:35:49] Added card: Castorice Maiden of War
+[2026-01-26 21:35:49] Processing card #5: Aglaea Goldweaver
+[2026-01-26 21:35:49] Added card: Aglaea Goldweaver
+[2026-01-26 21:35:49] Processing card #6: Hysilens Dux Gladiorum
+[2026-01-26 21:35:49] Added card: Hysilens Dux Gladiorum
+[2026-01-26 21:35:49] Processing card #7: Mydeimos Prince of Kremnos
+[2026-01-26 21:35:49] Added card: Mydeimos Prince of Kremnos
+[2026-01-26 21:35:49] Processing card #8: Hyacine Eye of Twilight
+[2026-01-26 21:35:49] Added card: Hyacine Eye of Twilight
+[2026-01-26 21:35:49] Processing card #9: Anaxagoras Blasphemer
+[2026-01-26 21:35:49] Added card: Anaxagoras Blasphemer
+[2026-01-26 21:35:49] Processing card #10: Cipher Fleet-Footed Traveler
+[2026-01-26 21:35:49] Added card: Cipher Fleet-Footed Traveler
+[2026-01-26 21:35:49] Processing card #11: Cipher Fleet-Footed Traveler
+[2026-01-26 21:35:49] Added card: Cipher Fleet-Footed Traveler
+[2026-01-26 21:35:49] Processing card #12: Hysilens Dux Gladiorum
+[2026-01-26 21:35:49] Added card: Hysilens Dux Gladiorum
+[2026-01-26 21:35:49] Processing card #13: Phainon The Deliverer
+[2026-01-26 21:35:49] Added card: Phainon The Deliverer
+[2026-01-26 21:35:49] Processing card #14: Aglaea Goldweaver
+[2026-01-26 21:35:49] Added card: Aglaea Goldweaver
+[2026-01-26 21:35:49] Processing card #15: The Raiden Shogun
+[2026-01-26 21:35:49] Added card: The Raiden Shogun
+[2026-01-26 21:35:49] Processing card #16: Silver Wolf Stellaron Hunter
+[2026-01-26 21:35:49] Added card: Silver Wolf Stellaron Hunter
+[2026-01-26 21:35:49] Processing card #17: The Astral Express
+[2026-01-26 21:35:49] Added card: The Astral Express
+[2026-01-26 21:35:49] Processing card #18: Paimon Emergency Food
+[2026-01-26 21:35:49] Added card: Paimon Emergency Food
+[2026-01-26 21:35:49] Processing card #19: Imaginary Trees Cycle
+[2026-01-26 21:35:49] Added card: Imaginary Trees Cycle
+[2026-01-26 21:35:49] Processing card #20: Archons Decree
+[2026-01-26 21:35:49] Added card: Archons Decree
+[2026-01-26 21:35:49] Processing card #21: The Vision Hunt Decree
+[2026-01-26 21:35:49] Added card: The Vision Hunt Decree
+[2026-01-26 21:35:49] Processing card #22: Silver Wolf Stellaron Hunter
+[2026-01-26 21:35:49] Added card: Silver Wolf Stellaron Hunter
+[2026-01-26 21:35:49] Processing card #23: Void Archives
+[2026-01-26 21:35:49] Added card: Void Archives
+[2026-01-26 21:35:49] Processing card #24: Honkai Eruption
+[2026-01-26 21:35:49] Added card: Honkai Eruption
+[2026-01-26 21:35:49] Processing card #25: Legacy of St. Freya
+[2026-01-26 21:35:49] Added card: Legacy of St. Freya
+[2026-01-26 21:35:49] Processing card #26: Sirin Herrscher of the Void
+[2026-01-26 21:35:49] Added card: Sirin Herrscher of the Void
+[2026-01-26 21:35:49] Processing card #27: Sirin Herrscher of the Void
+[2026-01-26 21:35:49] Added card: Sirin Herrscher of the Void
+[2026-01-26 21:35:49] Processing card #28: Domain of the Void
+[2026-01-26 21:35:49] Added card: Domain of the Void
+[2026-01-26 21:35:49] Processing card #29: Kiana Herrscher of Finality
+[2026-01-26 21:35:49] Added card: Kiana Herrscher of Finality
+[2026-01-26 21:35:49] Processing card #30: Mei Herrscher of Origin
+[2026-01-26 21:35:49] Added card: Mei Herrscher of Origin
+[2026-01-26 21:35:49] Processing card #31: Bronya Herrscher of Truth
+[2026-01-26 21:35:49] Added card: Bronya Herrscher of Truth
+[2026-01-26 21:35:49] Processing card #32: Data Construct
+[2026-01-26 21:35:49] Added card: Data Construct
+[2026-01-26 21:35:49] Processing card #33: Honkai Beast
+[2026-01-26 21:35:49] Added card: Honkai Beast
+[2026-01-26 21:35:49] Processing card #34: Plains
+[2026-01-26 21:35:49] Added card: Plains
+[2026-01-26 21:35:49] Processing card #35: Island
+[2026-01-26 21:35:49] Added card: Island
+[2026-01-26 21:35:49] Processing card #36: Swamp
+[2026-01-26 21:35:49] Added card: Swamp
+[2026-01-26 21:35:49] Processing card #37: Mountain
+[2026-01-26 21:35:49] Added card: Mountain
+[2026-01-26 21:35:49] Processing card #38: Forest
+[2026-01-26 21:35:49] Added card: Forest
+[2026-01-26 21:35:49] Processing card #39: Vision
+[2026-01-26 21:35:49] Added card: Vision
+[2026-01-26 21:35:49] Processing card #40: Herrschers Rebuttal
+[2026-01-26 21:35:49] Added card: Herrschers Rebuttal
+[2026-01-26 21:35:49] Processing card #41: Space Anchor
+[2026-01-26 21:35:49] Added card: Space Anchor
+[2026-01-26 21:35:49] Processing card #42: Bangboo Courier
+[2026-01-26 21:35:49] Added card: Bangboo Courier
+[2026-01-26 21:35:49] Processing card #43: Mydeimos Prince of Kremnos
+[2026-01-26 21:35:49] Added card: Mydeimos Prince of Kremnos
+[2026-01-26 21:35:49] Processing card #44: Anaxagoras Blasphemer
+[2026-01-26 21:35:49] Added card: Anaxagoras Blasphemer
+[2026-01-26 21:35:49] Processing card #45: Castorice Maiden of War
+[2026-01-26 21:35:49] Added card: Castorice Maiden of War
+[2026-01-26 21:35:49] Processing card #46: Hyacine Eye of Twilight
+[2026-01-26 21:35:49] Added card: Hyacine Eye of Twilight
+[2026-01-26 21:35:49] Processing card #47: March 7th "Evernight"
+[2026-01-26 21:35:49] Added card: March 7th "Evernight"
+[2026-01-26 21:35:49] Processing card #48: Dan Heng Permansor Terrae
+[2026-01-26 21:35:49] Added card: Dan Heng Permansor Terrae
+[2026-01-26 21:35:49] Processing card #49: Tribbie Maiden of Janusopolis
+[2026-01-26 21:35:49] Added card: Tribbie Maiden of Janusopolis
+[2026-01-26 21:35:49] Processing card #50: Tribbie Maiden of Janusopolis
+[2026-01-26 21:35:49] Added card: Tribbie Maiden of Janusopolis
+[2026-01-26 21:35:49] Processing card #51: Dan Heng Permansor Terrae
+[2026-01-26 21:35:49] Added card: Dan Heng Permansor Terrae
+[2026-01-26 21:35:49] Processing card #52: March 7th "Evernight"
+[2026-01-26 21:35:49] Added card: March 7th "Evernight"
+[2026-01-26 21:35:49] Finished reading cardData.txt, total rows processed: 52
+[2026-01-26 21:35:49] Loaded card details for: Anaxagoras Blasphemer
