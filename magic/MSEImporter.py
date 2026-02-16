@@ -1,7 +1,7 @@
 from card import Card
 from printings import printings, printing
 import os
-def MSEImport(MSECardData: str) -> list[Card]:
+def MSEImport(MSECardData: str, cardSet: str) -> list[Card]:
 
     cardData = open(MSECardData, 'r', encoding="utf-8").read()
 
@@ -15,11 +15,11 @@ def MSEImport(MSECardData: str) -> list[Card]:
     #Remove top Line
     lines = lines[1:]
 
-    availablePrintingsDefault = os.listdir(os.path.join(os.path.dirname(__file__), "TestContent", "printings", "default"))
-    availablePrintingsBorderless = os.listdir(os.path.join(os.path.dirname(__file__), "TestContent", "printings", "borderless"))
-    availablePrintingsExtendedArt = os.listdir(os.path.join(os.path.dirname(__file__), "TestContent", "printings", "extended-art"))
-    availablePrintingsPromo = os.listdir(os.path.join(os.path.dirname(__file__), "TestContent", "printings", "promo"))
-    availablePrintingsShowcase = os.listdir(os.path.join(os.path.dirname(__file__), "TestContent", "printings", "showcase"))
+    availablePrintingsDefault = os.listdir(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "default")) if os.path.exists(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "default")) else []
+    availablePrintingsBorderless = os.listdir(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "borderless")) if os.path.exists(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "borderless")) else []
+    availablePrintingsExtendedArt = os.listdir(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "extended-art")) if os.path.exists(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "extended-art")) else []
+    availablePrintingsPromo = os.listdir(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "promo")) if os.path.exists(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "promo")) else []
+    availablePrintingsShowcase = os.listdir(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "showcase")) if os.path.exists(os.path.join(os.path.dirname(__file__), "cards\\sets\\"+cardSet, "printings", "showcase")) else []
 
 
     for line in lines:
@@ -66,41 +66,31 @@ def MSEImport(MSECardData: str) -> list[Card]:
                 -showcase
         '''
 
-        defaultPrintings = []
-        borderlessPrintings = []
-        extendedArtPrintings = []
-        promoPrintings = []
-        showcasePrintings = []
+        cardPrintings = printings()
 
         cardName = card.name
         cardName = cardName.replace("'", "").replace(",", "").replace(":", "")
         for printingVar in availablePrintingsDefault:
-            abs_path = os.path.join("default", printingVar)
+            abs_path = os.path.join(cardSet, "printings", "default", printingVar)
             if printingVar.startswith(cardName):   
-                defaultPrintings.append(printing(abs_path))
+                cardPrintings.printings.append(printing(abs_path))
         for printingVar in availablePrintingsBorderless:
-            abs_path = os.path.join("borderless", printingVar)
+            abs_path = os.path.join(cardSet, "printings", "borderless", printingVar)
             if printingVar.startswith(cardName):
-                borderlessPrintings.append(printing(abs_path))
+                cardPrintings.printings.append(printing(abs_path))
         for printingVar in availablePrintingsExtendedArt:
-            abs_path = os.path.join("extended-art", printingVar)
+            abs_path = os.path.join(cardSet, "printings", "extended-art", printingVar)
             if printingVar.startswith(cardName):
-                extendedArtPrintings.append(printing(abs_path))
+                cardPrintings.printings.append(printing(abs_path))
         for printingVar in availablePrintingsPromo:
-            abs_path = os.path.join("promo", printingVar)
+            abs_path = os.path.join(cardSet, "printings", "promo", printingVar)
             if printingVar.startswith(cardName):
-                promoPrintings.append(printing(abs_path))
+                cardPrintings.printings.append(printing(abs_path))
         for printingVar in availablePrintingsShowcase:
-            abs_path = os.path.join("showcase", printingVar)
+            abs_path = os.path.join(cardSet, "printings", "showcase", printingVar)
             if printingVar.startswith(cardName):
-                showcasePrintings.append(printing(abs_path))
+                cardPrintings.printings.append(printing(abs_path))
 
-        cardPrintings = printings()
-        cardPrintings.default = defaultPrintings
-        cardPrintings.borderless = borderlessPrintings
-        cardPrintings.extendedArt = extendedArtPrintings
-        cardPrintings.promo = promoPrintings
-        cardPrintings.showcase = showcasePrintings
         card.frontPrintings = cardPrintings
 
     return cards
