@@ -1,3 +1,4 @@
+from email import header
 import sys
 import os
 from flask import Flask, jsonify, url_for, request
@@ -12,27 +13,27 @@ def getCards(set: str) -> list[Card]:
     return cards
 
 def navBar():
-    return "<nav class=\"navbar navbar-expand-lg bg-body-tertiary\">\n" \
-    "  <div class=\"container-fluid\">\n" \
-    "    <a class=\"navbar-brand\" href=\"/\">Emmy - Magic: The Gathering</a>\n" \
-    "    <button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#navbarNav\" aria-controls=\"navbarNav\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">\n" \
-    "      <span class=\"navbar-toggler-icon\"></span>\n" \
-    "    </button>\n" \
-    "    <div class=\"collapse navbar-collapse\" id=\"navbarNav\">\n" \
-    "      <ul class=\"navbar-nav\">\n" \
-    "        <li class=\"nav-item\">\n" \
-    "          <a class=\"nav-link\" href=\"/sets\">Sets</a>\n" \
-    "        </li>\n" \
-    "        <li class=\"nav-item\">\n" \
-    "          <a class=\"nav-link\" href=\"/secretlair\">Secret Lairs</a>\n" \
-    "        </li>\n" \
-    "        <li class=\"nav-item\">\n" \
-    "          <a class=\"nav-link\" href=\"/other\">Other Cards</a>\n" \
-    "        </li>\n" \
-    "      </ul>\n" \
-    "    </div>\n" \
-    "  </div>\n" \
-    "</nav>"
+    return """<header>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light ">
+        <button class="navbar-toggler ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+          <ul class="navbar-nav ">
+            <li class="nav-item">
+              <a class="nav-link" href="/professional/projects.html">Projects</a>
+            </li>
+            <!--<li class="nav-item">
+              <a class="nav-link" href="/professional/experience.html">Experience</a>
+            </li> -->
+            <li class="nav-item">
+              <a class="nav-link" href="/professional/qualifications.html">Qualifications</a>
+            </li>
+          </ul>
+          <a class="navbar-brand emmy-brand-right" href="/">Home</a>
+        </div>
+      </nav>
+    </header>"""
 
 def pageHeader():
     return "<html>" \
