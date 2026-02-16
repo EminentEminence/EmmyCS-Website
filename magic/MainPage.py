@@ -74,7 +74,7 @@ def displayWeb():
 @app.route("/cardview/<set>/<cardName>")
 def displayCardView(set, cardName):
     printingPath = request.args.get("printingPath")
-    return f"<html><body><h1>{cardName} - {set}</h1><img src='{url_for('static', filename=f'{printingPath}')}'></body></html>"
+    return f"<html><body><h1>{cardName} - {set}</h1><img src=\"{url_for('static', filename=f'{printingPath}')}\"></body></html>"
 
 @app.route("/cardview/<set>")
 def displaySetView(set):
@@ -84,8 +84,7 @@ def displaySetView(set):
     code += "<div class=\"row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 row-cols-xxl-5\">"
     cards = getCards(set)
     for card in cards:
-        printing = card.frontPrintings.printings[0] if card.frontPrintings.getLength() > 0 else None
-        if printing is not None:
+        for printing in card.frontPrintings.printings:
             code += f"<div class=\"col\"><a href=\"{url_for('displayCardView', set=set, cardName=card.name, printingPath=printing.image)}\"><img class=\"img-fluid h-100 m-1\" src=\"{url_for('static', filename=f'{printing.image}')}\"></a></div>"
     code += "</div><hr>"
     return code + "</body></html>"
