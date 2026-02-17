@@ -33,7 +33,7 @@ body {
     margin-right: 1px;
 }
 
-@media (min-width: 992px) { 
+@media (min-width: 576px) { 
   .emmy-brand-right {
     position: absolute;
     right: 1rem;
