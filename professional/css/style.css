@@ -47,3 +47,6 @@ body {
     margin: 0 auto;
     position: relative;
 }
+.font-monserrat {
+    font-family: 'Montserrat', sans-serif;
+}
