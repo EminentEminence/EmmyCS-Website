@@ -9,6 +9,7 @@ class Card:
         self.type = None
         self.rarity = "Special"
         self.rulesText = "No rules text."
+        self.flavourText = ""
         self.power = None
         self.toughness = None
         self.loyalty = None
@@ -20,6 +21,7 @@ class Card:
         self.type2 = None
         self.rarity2 = None
         self.rulesText2 = None
+        self.flavourText2 = None
         self.power2 = None
         self.toughness2 = None
         self.loyalty2 = None
