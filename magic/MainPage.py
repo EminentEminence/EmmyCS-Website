@@ -46,9 +46,11 @@ def pageHeader():
   "       <meta charset=\"utf-8\">" \
     "       <link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css\">" \
     "       <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js\"></script>" \
+    "<style>" + CSS() + "</style>" \
     "   </head>" \
     "<body>"
-
+def CSS():
+    return open(os.path.join(os.path.dirname(__file__), "../css/style.css"), 'r').read()
 def getCardByName(cardName, set) -> Card:
   cards = getCards(set)
   for card in cards:

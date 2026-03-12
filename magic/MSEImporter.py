@@ -20,11 +20,20 @@ def _parse_printing_file_name(file_name: str) -> tuple[str, str]:
     base_name, _ = os.path.splitext(file_name)
     parts = base_name.split("-")
 
-    if len(parts) < 3 or not parts[0].isdigit():
+    if len(parts) < 2:
         return "", ""
 
-    card_name = "-".join(parts[1:-1]).strip()
-    artist = parts[-1].strip()
+    # New exporter format: {cardname}-{artist}.png with optional -{n} suffix for duplicates.
+    if parts[-1].isdigit() and len(parts) >= 3:
+        artist = parts[-2].strip()
+        card_name = "-".join(parts[:-2]).strip()
+    else:
+        artist = parts[-1].strip()
+        card_name = "-".join(parts[:-1]).strip()
+
+    if not card_name or not artist:
+        return "", ""
+
     return card_name, artist
 
 
