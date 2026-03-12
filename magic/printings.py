@@ -13,8 +13,10 @@ class printings:
 
 
 class printing:
-    def __init__(self, address:str):
+    def __init__(self, address: str, type, artist: str = ""):
         self.image = address.replace("\\", "/")
+        self.type = type
+        self.artist = artist
 
 
 
