@@ -1,0 +1,118 @@
+Set: BJE
+Name || Mana Cost || Type || Rarity || Rules Text || Flavor Text || Power || Toughness || Loyalty || Illustrator || Card Number || Notes || [BACK FACE] || Name 2 || Mana Cost 2 || Type 2 || Rules Text 2 || Flavor Text 2 || Power 2 || Toughness 2 || Loyalty 2 || Illustrator 2 || Card Number 2 || Notes 2 || 
+.——Standard—— ||  ||  || common ||  ||  ||  ||  ||  ||  || 1 ||  || 
+ ||  ||  || common ||  ||  ||  ||  ||  ||  || 1 ||  || 
+.——Full-Art—— ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 1 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 1 ||  || 
+Flamme, Founder of Human Magic || 2UR || Legendary Creature — Human Mage  || masterpiece || Mana Suppression\n Whenever you cast an instant or sorcery spell, choose one —\n • Create a 1/1 blue and red Human Wizard creature token with “T: Add U or R. Spend this mana only to cast an instant or sorcery spell.”\n • Flamme deals 2 damage to any target\n  ||  || 3 || 4 ||  || MiekoNeko || 2 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 2 ||  || 
+Stark, Warrior Apprentice ||  || Legendary Creature — Human Warrior  || rare ||  ||  ||  ||  ||  ||  || 2 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 2 ||  || 
+Aura of Mana || 2U || Enchantment — Aura  || rare || Enchanted creature has Mana Suppression (Whenever that creature creature attacks or blocks, put a +2/+0 counter on it for each instant or sorcery card in your graveyard until end of turn.)\n Whenever an opponent casts their second spell each turn, tap target permanent that player controls. ||  ||  ||  ||  || Madhouse || 3 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 3 ||  || 
+Übel, Empathetic Psycopath || 5UU || Legendary Creature — Human Mage  || masterpiece || Deathtouch, Menace\n 2U: Put a Empathy counter on target Mage or Wizard creature.\n Übel, Empathetic Psycopath has all the activated abilities of creatures with a Empathy counter on them. ||  || 4 || 2 ||  || Sheij007 || 3 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 3 ||  || 
+Frieren, The Slayer || 3RR || Legendary Creature — Elf Mage  || masterpiece || Mana Suppression\n Whenever a Demon enters the battlefield, you may have Frieren, The Slayer deal damage equal to her power to that creature. If that creature survives, it fights Frieren. ||  || 3 || 2 ||  || elinanoodles || 4 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 4 ||  || 
+Denken, Imperial Mage || 1UU || Legendary Creature — Human Mage  || rare || Whenever an opponent casts a spell during your turn, counter it unless its controller pays 2.\n Whenever you cast an instant or sorcery during an opponent’s turn, draw a card, then discard a card. ||  ||  ||  ||  || Madhouse || 4 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 4 ||  || 
+Denken’s Calculation || 1U || Instant || uncommon || Scry 3\n You may cast an instant or sorcery spell with mana value 2 or less from your hand without paying its mana cost. || “Battle is merely a puzzle with lethal consequences.” ||  ||  ||  || Madhouse || 5 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 5 ||  || 
+A spell that creates a field of flowers || 0 || Legendary Instant || masterpiece || Creates a field of flowers. || Why would you include this in your deck?\n “Utterly Useless” — Serie ||  ||  ||  || 混吃等死(躺 || 5 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 5 ||  || 
+Frieren’s Spell Archive || 2U || Enchantment || uncommon || Whenever you cast an instant or sorcery spell, exile the top card of your library.\n You may play instant and sorcery cards exiled with Frieren’s Spell Archive. ||  ||  ||  ||  || Madhouse || 6 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 6 ||  || 
+Eisen, The Warrior || 2RG || Legendary Creature — Dwarf Warrior  || masterpiece || Trample\n If damage would be dealt to another creature you control, you may have that damage dealt to Eisen instead.\n Whenever Eisen is dealt dmage, he deals that much damage to any target. || “Stand behind me. I’ll endure.”\n  || 5 || 5 ||  || ByrnEtch || 6 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 6 ||  || 
+Fern, Mage Apprentice || 1UR || Legendary Creature — Human Mage  || masterpiece || Mana Suppression\n Sorceries you control can be cast at the same time an instant can be played. ||  || 2 || 1 ||  || Ayasal || 7 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 7 ||  || 
+Grimoire of Useless Spells || 2U || Artifact || rare || Whenever you cast an instant or sorcery spell with mana value 1 or less, draw a card.\n T2: Exile target instant or sorcery card from your graveyard. Add one mana of any color. ||  ||  ||  ||  || Madhouse || 7 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 7 ||  || 
+Land, ’Four Eyes’ || 3U || Legendary Creature — Human Mage  || rare || T2: Create a copy of Land, ‘Four Eyes’ except it isn’t legendary and has haste. At the beginning of your end step, exile the copy. ||  || 2 || 2 ||  || Madhouse || 8 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 8 ||  || 
+Frieren, The Mage || 2UR || Legendary Creature — Elf Mage  || masterpiece || Whenever you cast an instant or sorcery spell with a name different from a spell in your graveyard, draw a card.\n Spells you cast cost 1 less to cast for each different instant and sorcery card name in your graveyard. (This effect reduces only colored mana.)\n Whenever you cast your third spell each turn, scry 2. || “It may seem useless now. But someday, it might be interesting.” || 3 || 5 ||  || MatteoD || 8 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 8 ||  || 
+Mission Briefing || UU || Instant || rare || Surveil 2, then choose an instant or sorcery card in your graveyard. You may cast it this turn. If that spell would be put into your graveyard, exile it instead.  (To surveil 2, look at the top two cards of your library, then put any number of them into your graveyard and the rest on top of your library in any order.) ||  ||  ||  ||  || Tsukasa Abe || 9 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 9 ||  || 
+Heiter, The Priest || 1GW || Legendary Creature — Human Cleric  || masterpiece || Lifelink\n At the beginning of your end step, you may return target creature card with mana value 2 or less from your graveyard to the battlefield.\n Whenever you gain life, put a +1/+1 counter on another target creature you control. || “The Goddess forgives. I merely fill out the paperwork.” || 2 || 5 ||  || Madhouse || 9 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 9 ||  || 
+One Hundred Years Later || 2U || Instant || rare || Exile target instant or sorcery spell.\n At the beginning of your next upkeep, you may cast that card without paying its mana cost. ||  ||  ||  ||  || Madhouse || 10 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 10 ||  || 
+The Hero’s Journey || 2RGWU || Legendary Enchantment || masterpiece || When The Hero’s Journey enters the battlefield, discard your hand. If you do, search your library for a Cleric, Hero, Mage, and Warrior creature card with different names, reveal them, and put them into your hand. Then shuffle.\n This card can be your commander. || “Four paths crossed once — and the world was changed forever.” ||  ||  ||  || MigMats || 10 || I had to use AI to make the original image by MigMats taller, but I felt the art was so good that is deserved to be used anyways. || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 10 || I had to use AI to make the original image by MigMats taller, but I felt the art was so good that is deserved to be used anyways. || 
+Serie, Living Grimoire || 2UU || Legendary Creature — Elf Mage  || mythic rare || Mana Suppression\n 2U : Discard an instant or sorcery card. If you do, search your library for an instant or sorcery card with mana value less than that card’s mana value, reveal it, put it into your hand, then shuffle. ||  || 2 || 2 ||  || Madhouse || 11 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 11 ||  || 
+Himmel, The Hero || 2WU || Legendary Creature — Human Hero  || masterpiece || Other creatures you control get +1/+1.\n Whenever another creature you control attacks, it gains indestructible until end of turn if it’s attacking the player with the most life.\n Whenever one or more other creatures you control die, you may draw a card. || “Go on. I believe in you.”\n  || 3 || 3 ||  || netural || 11 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 11 ||  || 
+Übel, Empathetic Psycopath || 5UU || Legendary Creature — Human Mage  || rare || Deathtouch, Menace\n 2U: Put a Empathy counter on target Mage or Wizard creature.\n Übel, Empathetic Psycopath has all the activated abilities of creatures with a Empathy counter on them. ||  || 4 || 2 ||  || Madhouse || 12 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 12 ||  || 
+Zoltraak || XUR || Sorcery || masterpiece || This spell costs 1 more to cast for each target beyond the first.\n Zoltraak deals X damage divided evenly, rounded down, among any number of targets. If the target is a demon, it deals double that damage instead. ||  ||  ||  ||  || SoyChicken || 12 ||  || 
+ ||  ||  || masterpiece ||  ||  ||  ||  ||  ||  || 12 ||  || 
+Wirbel, Northern Captain || 3U || Legendary Creature — Human Mage  || uncommon || T1: Tap target creature. It loses all abilities until the beginning of its controllers upkeep. ||  || 3 || 2 ||  || Madhouse || 13 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 13 ||  || 
+Faithless Looting || R || Sorcery || common || Draw two cards, then discard two cards.\n Flashback 2R (You may cast this card from your graveyard for its flashback cost. Then exile it.) ||  ||  ||  ||  || Madhouse || 14 ||  || 
+ ||  ||  || common ||  ||  ||  ||  ||  ||  || 14 ||  || 
+Frieren, The Slayer || 3RR || Legendary Creature — Elf Mage  || mythic rare || Mana Suppression  (Whenever this creature creature attacks or blocks, put a +2/+0 counter on it for each instant or sorcery card in your graveyard until end of turn.)\n Whenever a Demon enters the battlefield, you may have Frieren, The Slayer deal damage equal to her power to that creature. If that creature survives, it fights Frieren. ||  || 3 || 2 ||  || Madhouse || 15 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 15 ||  || 
+Past in Flames || 3R || Sorcery || mythic rare || Each instant and sorcery card in your graveyard gains flashback until end of turn. The flashback cost is equal to its mana cost.\n Flashback 4R (You may cast this card from your graveyard for its flashback cost. Then exile it.) ||  ||  ||  ||  || Madhouse || 16 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 16 ||  || 
+Eisen, The Warrior || 2RG || Legendary Creature — Dwarf Warrior  || mythic rare || Trample\n If damage would be dealt to another creature you control, you may have that damage dealt to Eisen instead.\n Whenever Eisen is dealt dmage, he deals that much damage to any target. || “Stand behind me. I’ll endure.”\n  || 5 || 5 ||  || Madhouse || 17 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 17 ||  || 
+Fern, Mage Apprentice || 1UR || Legendary Creature — Human Mage  || rare || Mana Suppression\n Sorceries you control can be cast at the same time an instant can be played. ||  || 2 || 1 ||  || Madhouse || 18 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 18 ||  || 
+Flamme, Founder of Human Magic || 2UR || Legendary Creature — Human Mage  || rare || Mana Suppression\n Whenever you cast an instant or sorcery spell, choose one —\n • Create a 1/1 blue and red Human Wizard creature token with “T: Add U or R. Spend this mana only to cast an instant or sorcery spell.”\n • Flamme deals 2 damage to any target\n  ||  || 3 || 4 ||  || Madhouse || 19 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 19 ||  || 
+Flamme’s Forgotten Lesson || UR || Legendary Instant — Lesson  || uncommon || Choose One —\n • Copy target instant or sorcery spell you control. You may choose new targets for the copy\n • Return target instant or sorcery card from your graveyard to your hand.\n If you control a creature with Mana Suppression, you may choose both instead. ||  ||  ||  ||  || Madhouse || 20 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 20 ||  || 
+Frieren, The Mage || 2UR || Legendary Creature — Elf Mage  || mythic rare || Whenever you cast an instant or sorcery spell with a name different from a spell in your graveyard, draw a card.\n Spells you cast cost 1 less to cast for each different instant and sorcery card name in your graveyard. (This effect reduces only colored mana.)\n Whenever you cast your third spell each turn, scry 2. || “It may seem useless now. But someday, it might be interesting.” || 3 || 5 ||  || Madhouse || 21 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 21 ||  || 
+Heiter, The Priest || 1GW || Legendary Creature — Human Cleric  || mythic rare || Lifelink\n At the beginning of your end step, you may return target creature card with mana value 2 or less from your graveyard to the battlefield.\n Whenever you gain life, put a +1/+1 counter on another target creature you control. || “The Goddess forgives. I merely fill out the paperwork.” || 2 || 5 ||  || Madhouse || 22 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 22 ||  || 
+The Hero’s Journey || 2RGWU || Legendary Enchantment || mythic rare || When The Hero’s Journey enters the battlefield, discard your hand. If you do, search your library for a Cleric, Hero, Mage, and Warrior creature card with different names, reveal them, and put them into your hand. Then shuffle.\n This card can be your commander. || “Four paths crossed once — and the world was changed forever.” ||  ||  ||  || Madhouse || 23 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 23 ||  || 
+Himmel, The Hero || 2WU || Legendary Creature — Human Hero  || mythic rare || Other creatures you control get +1/+1.\n Whenever another creature you control attacks, it gains indestructible until end of turn if it’s attacking the player with the most life.\n Whenever one or more other creatures you control die, you may draw a card. || “Go on. I believe in you.”\n  || 3 || 3 ||  || Madhouse || 24 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 24 ||  || 
+Lawine, Ice Sculptor || 2UR || Legendary Creature — Human Mage  || uncommon || Whenever you cast your second instant or sorcery spell each turn, tap up to two target creatures. They don’t untap during their controller’s next untap step. || “A battlefield is merely another canvas.” || 3 || 3 ||  || Madhouse || 25 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 25 ||  || 
+Lernen, Serie’s Disciple || 1UR || Legendary Creature — Human Mage  || uncommon || Whenever you cast an instant or sorcery spell, you may pay 1. If you do, copy that spell. You may choose new targets for the copy. This ability triggers only once each turn. ||  || 2 || 2 ||  || Madhouse || 26 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 26 ||  || 
+Scales of Obedience || 4UR || Legendary Artifact — Equipment  || mythic rare || Whenever equipped creature attacks, choose target creature defending player controls. Compare their powers. The controller of the creature with greater power gains control of the other creature. Remove both creatures from combat.\n Equip 4 ||  ||  ||  ||  || Madhouse || 27 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 27 ||  || 
+Serie’s Examination || 2UR || Instant || uncommon || Choose one. If you control a Mage, choose two instead.\n • Copy target instant or sorcery spell.\n • Return target instant or sorcery card from your graveyard to your hand.\n • Draw two cards, then discard a card. || “Magic is not about talent. It is about centuries of study.” ||  ||  ||  || Madhouse || 28 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 28 ||  || 
+Zoltraak || XUR || Sorcery || uncommon || This spell costs 1 more to cast for each target beyond the first.\n Zoltraak deals X damage divided evenly, rounded down, among any number of targets. If the target is a demon, it deals double that damage instead. ||  ||  ||  ||  || Madhouse || 29 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 29 ||  || 
+Plains ||  || Land — Plains  || basic land ||  ||  ||  ||  ||  || Madhouse || 30 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 30 ||  || 
+Island ||  || Land — Island  || basic land ||  ||  ||  ||  ||  || Madhouse || 31 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 31 ||  || 
+Swamp ||  || Land — Swamp  || basic land ||  ||  ||  ||  ||  || Madhouse || 32 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 32 ||  || 
+Mountain ||  || Land — Mountain  || basic land ||  ||  ||  ||  ||  || Madhouse || 33 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 33 ||  || 
+Forest ||  || Land — Forest  || basic land ||  ||  ||  ||  ||  || Madhouse || 34 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 34 ||  || 
+.——Extended—— ||  ||  || common ||  ||  ||  ||  ||  ||  || 35 ||  || 
+ ||  ||  || common ||  ||  ||  ||  ||  ||  || 35 ||  || 
+Übel, Empathetic Psycopath || 5UU || Legendary Creature — Human Mage  || rare || Deathtouch, Menace\n 2U: Put a Empathy counter on target Mage or Wizard creature.\n Übel, Empathetic Psycopath has all the activated abilities of creatures with a Empathy counter on them. ||  || 4 || 2 ||  || Madhouse || 36 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 36 ||  || 
+Frieren, The Slayer || 3RR || Legendary Creature — Elf Mage  || mythic rare || Mana Suppression\n Whenever a Demon enters the battlefield, you may have Frieren, The Slayer deal damage equal to her power to that creature. If that creature survives, it fights Frieren. ||  || 3 || 2 ||  || Madhouse || 37 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 37 ||  || 
+Fern, Mage Apprentice || 1UR || Legendary Creature — Human Mage  || rare || Mana Suppression\n Sorceries you control can be cast at the same time an instant can be played. ||  || 2 || 1 ||  || Madhouse || 38 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 38 ||  || 
+Zoltraak || XUR || Sorcery || uncommon || This spell costs 1 more to cast for each target beyond the first.\n Zoltraak deals X damage divided evenly, rounded down, among any number of targets. If the target is a demon, it deals double that damage instead. ||  ||  ||  ||  || Madhouse || 39 ||  || 
+ ||  ||  || uncommon ||  ||  ||  ||  ||  ||  || 39 ||  || 
+.——Borderless—— ||  ||  || common ||  ||  ||  ||  ||  ||  || 40 ||  || 
+ ||  ||  || common ||  ||  ||  ||  ||  ||  || 40 ||  || 
+Fern, Mage Apprentice || 1UR || Legendary Creature — Human Mage  || rare || Mana Suppression\n Sorceries you control can be cast at the same time an instant can be played. ||  || 2 || 1 ||  || Madhouse || 41 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 41 ||  || 
+Plains ||  || Land — Plains  || basic land ||  ||  ||  ||  ||  || Madhouse || 42 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 42 ||  || 
+Island ||  || Land — Island  || basic land ||  ||  ||  ||  ||  ||  || 43 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 43 ||  || 
+Swamp ||  || Land — Swamp  || basic land ||  ||  ||  ||  ||  || Madhouse || 44 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 44 ||  || 
+Mountain ||  || Land — Mountain  || basic land ||  ||  ||  ||  ||  || Madhouse || 45 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 45 ||  || 
+Forest ||  || Land — Forest  || basic land ||  ||  ||  ||  ||  || Madhouse || 46 ||  || 
+ ||  ||  || basic land ||  ||  ||  ||  ||  ||  || 46 ||  || 

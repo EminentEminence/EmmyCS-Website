@@ -1,0 +1,7 @@
+Name || Mana Cost || Type || Rarity || Rules Text || Flavor Text || Power || Toughness || Loyalty || Illustrator || Card Number || Notes || [BACK FACE] || Name 2 || Mana Cost 2 || Type 2 || Rules Text 2 || Flavor Text 2 || Power 2 || Toughness 2 || Loyalty 2 || Illustrator 2 || Card Number 2 || Notes 2 || 
+Celeste, Coney’s Star || 3UR || Legendary Creature — Unicorn Performer  || rare ||  ||  || 4 || 4 ||  || Valve || 1 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 1 ||  || 
+. —— Full Art —— ||  ||  || common ||  ||  ||  ||  ||  ||  || 2 ||  || 
+ ||  ||  || common ||  ||  ||  ||  ||  ||  || 2 ||  || 
+Celeste, Coney’s Star || 3UR || Legendary Creature — Unicorn Performer  || rare ||  ||  || 4 || 4 ||  || Anninosart || 3 ||  || 
+ ||  ||  || rare ||  ||  ||  ||  ||  ||  || 3 ||  || 

@@ -1,0 +1,52 @@
+Set: 7DS
+Name || Mana Cost || Type || Rarity || Rules Text || Flavor Text || Power || Toughness || Loyalty || Illustrator || Card Number || Notes || [BACK FACE] || Name 2 || Mana Cost 2 || Type 2 || Rules Text 2 || Flavor Text 2 || Power 2 || Toughness 2 || Loyalty 2 || Illustrator 2 || Card Number 2 || Notes 2 || 
+Meliodas, Accursed Demon || 1UB || Legendary Creature — Demon Sinner  || mythic rare || Full Counter — Whenever this creature becomes the target of a spell an opponent controls, you may pay 3 and T. If you do, change that spell’s target to its controller, if able. ||  || 3 || 2 ||  || D4n_Arts || 2 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 2 ||  || 
+Demon Sword Lostvayne || 4 || Legendary Artifact — Sacred Treasure  || mythic rare || Equipped creature has Myriad\n Activated abilities of equipped creature can be activated without tapping it.\n Equip 2 ||  ||  ||  ||  || Studio Deen || 3 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 3 ||  || 
+Diane, Giant Queen || 3GW || Legendary Creature — Giant Sinner  || mythic rare || Heavy Metal — Whenever this creature becomes the target of a spell, you may pay 1G. If you do, counter that spell.\n Drole’s Dance — 3G: Gain +1/+1 for each land you control until end of turn. ||  || 2 || 5 ||  || Val || 5 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 5 ||  || 
+War Hammer Gideon || 3 || Legendary Artifact — Sacred Treasure  || mythic rare || If a source would deal damage to equipped creature or its controller, you may sacrifice a land instead.\n Equip 3 ||  ||  ||  ||  || A-1 Pictures || 6 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 6 ||  || 
+Ban, the Undead || 3RW || Legendary Creature — Human Sinner  || mythic rare || Indestructible\n Snatch — Whenever Ban, the Undead attacks, target creature gets -X/-Y until the beginning of your next upkeep and Ban gets +X/+Y until the beginning of your next upkeep, where X and Y are half that creature’s power and toughness, respectively, rounded down. ||  || 2 || 2 ||  || Theo Murgan || 8 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 8 ||  || 
+Holy Staff Courechouse || 1 || Legendary Artifact — Sacred Treasure  || mythic rare || If one or more counters would be placed on equipped creature, twice that many of those counters are placed instead.\n Equip 4 ||  ||  ||  ||  || Studio Deen || 9 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 9 ||  || 
+Harlequin, Traitorous King || 2RG || Legendary Creature — Faerie Sinner  || mythic rare || Flying\n Disaster — T: For each source that dealt damage this turn, it deals that much damage again to the same permanents and players. ||  || 1 || 2 ||  || Jcomaeda || 11 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 11 ||  || 
+Spirit Spear Chastiefol || 3 || Legendary Artifact — Sacred Treasure  || mythic rare || Equipped Creature has +3/+1 and vigilance\n Equip 2 ||  ||  ||  ||  || A-1 Pictures || 12 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 12 ||  || 
+Goather, Magic Doll || 2UR || Legendary Creature — Doll Sinner  || mythic rare || Jack — 2U, T: Gain control of target creature until end of turn. You can’t activate its abilities.\n Rewrite Light — 2R, T: You may choose new targets for target spell or ability. ||  || 2 || 3 ||  || super omur || 14 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 14 ||  || 
+Twin Bow Herritt || 4 || Legendary Artifact — Sacred Treasure  || mythic rare || Activated abilities of equipped creature cost 2 less to activate.\n Equip 3 ||  ||  ||  ||  || Telecom Animation Film || 15 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 15 ||  || 
+Merlin, Daughter of Belialuin || 5U || Legendary Creature — Human Sinner  || mythic rare || Infinity — When Merlin, Daughter of Belialuin enters the battlefield, you exile an instant or sorcery card from your hand. \n At the beginning of your upkeep, you may cast the exiled card without paying its mana cost. If you cast it this way, exile it. ||  || 4 || 1 ||  || Felix Banuelos || 17 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 17 ||  || 
+Morning Star Aldan || 2 || Legendary Artifact — Sacred Treasure  || mythic rare || Whenever you cast a spell with mana value less than or equal to equipped creature’s power, you may exile that spell instead.\n You may cast the most recent spell exiled with Morning Star Aldan without paying its mana cost.\n Equip 1 ||  ||  ||  ||  || Studio Deen || 18 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 18 ||  || 
+Escanor, Accursed Child || RR || Legendary Creature — Human Sinner  || mythic rare || Nightbound (If a player casts at least two spells during their own turn, it becomes day next turn.)\n When this creaure enters, it becomes Night.\n At the beginning of your upkeep, remove all +1/+1 counters from Escanor, Accursed Child. ||  || 1 || 1 ||  || 5enket5u || 20 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 20 ||  || 
+Escanor, Master of the Sun ||  || Legendary Creature — Human Sinner  || mythic rare || Daybound (If a player casts no spells during their own turn, it becomes night next turn.)\n At the beginning of your upkeep, if it is Day put a +1/+1 counter on Escanor, Master of the Sun. ||  || 10 || 10 ||  || Drawesome_art || 21 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 21 ||  || 
+Divine Axe Rhitta || 2 || Legendary Artifact — Sacred Treasure  || mythic rare || As long as it’s night, equipped creature can’t transform.\n Equip 1 ||  ||  ||  ||  || Studio Deen || 22 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 22 ||  || 
+Derieri of Purity || 2W || Legendary Creature — Demon Commandment  || mythic rare || Combo Star — Whenever Derieri of Purity deals combat damage, put that many +1/+0 counters on her. ||  || 2 || 2 ||  || Studio Deen || 24 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 24 ||  || 
+Monspeet of Reticence || 2R || Legendary Creature — Demon Commandment  || mythic rare || Hellfire Bird — RR: Deal 3 damage to any target.  ||  || 3 || 2 ||  || Studio Deen || 25 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 25 ||  || 
+Zeldris of Piety || 3R || Legendary Creature — Demon Commandment  || mythic rare || Whenever a creature you control blocks, you may pay 2 and tap. If you do, deal damage equal to Zeldris’ power to that creature’s attacker. ||  || 3 || 2 ||  || Studio Deen || 26 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 26 ||  || 
+Drole of Patience || 3BR || Legendary Creature — Giant Commandment  || mythic rare || Drole’s Dance — 1B: Gain +1/+1 for each land you control until end of turn. ||  || 4 || 4 ||  || Studio Deen || 27 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 27 ||  || 
+Estaross of Love || 2BR || Legendary Creature — Demon Commandment  || mythic rare || Full Counter — Whenever this creature is dealt combat damage, you may pay 2 and T. If you do, deal that much damage to the attack instead. ||  || 3 || 2 ||  || Studio Deen || 28 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 28 ||  || 
+Fraudrin of Selflessness || 3WB || Legendary Creature — Demon Commandment  || mythic rare || Full Size — B: Gain +3/+3 and menace until end of turn. ||  || 2 || 3 ||  || Studio Deen || 29 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 29 ||  || 
+Galland of Truth || 1BR || Legendary Creature — Demon Commandment  || mythic rare || Commandment of Truth — If a player knowingly lies, you may gain control of a target creature they control. ||  || 4 || 1 ||  || Studio Deen || 30 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 30 ||  || 
+Gloxinia of Repose || 2WB || Legendary Creature — Faerie Commandment  || mythic rare || Moonrose, Droplet of Life — Whenever a creature you control dies, you may pay 3 and T. If you do, return that creature to the battlefield tapped. ||  || 2 || 3 ||  || Studio Deen || 31 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 31 ||  || 
+Grayroad of Pacifism || 4RWB || Legendary Creature — Demon Commandment  || mythic rare || This creature’s toughness does not reset during its controller’s upkeep.\n Whenever a creature dies, if it was killed by another creature, put X -1/-1 counters on that creature where X is that creature’s toughness. ||  || 0 || 20 ||  || Studio Deen || 32 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 32 ||  || 
+Melascula of Faith || 2WB || Legendary Creature — Demon Commandment  || mythic rare || Whenever this creature becomes blocked, if Melascula’s power is greater than the blocker’s toughness, put X +1/+0 counters on her and put X -1/-0 counters on the blocker where X is that creature’s base power. ||  || 1 || 2 ||  || Studio Deen || 33 ||  || 
+ ||  ||  || mythic rare ||  ||  ||  ||  ||  ||  || 33 ||  || 
