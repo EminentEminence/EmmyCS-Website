@@ -131,10 +131,8 @@ def displayCardView(set, cardName):
               <p>Illustrated By {selected_artist}</p>
             </section>
             <section class=\"col-3 border border-black border-2\">
-              <div class=\"row\"><h3>prints</h3></div>
-      """ \
-      + printingsCode \
-      + """
+              <div class=\"row\"><h3>Prints</h3></div>
+            {printingsCode}
             </section>
           </main>
         </body>
