@@ -1,0 +1,3 @@
+﻿[CARDv2] name="Eminent, Of Frost" normalized="Eminent, Of Frost" matched=false folder="Standard" image="images/Standard/Eminent, Of Frost-Aszith.png" number="1"
+[CARDv2] name="Frozen Creature" normalized="Frozen Creature" matched=false folder="Standard" image="images/Standard/Frozen Creature-Emmy.png" number="1"
+[CARDv2] name="Eminent, Of Stars" normalized="Eminent, Of Stars" matched=false folder="Standard" image="images/Standard/Eminent, Of Stars-Unknown.png" number="2"

@@ -1,0 +1,3 @@
+﻿[CARDv2] name="Misha Necron" normalized="Misha Necron" matched=false folder="Standard" image="images/Standard/Misha Necron-Silver Link.png" number="1"
+[CARDv2] name="Aisha Necron" normalized="Aisha Necron" matched=false folder="Standard" image="images/Standard/Aisha Necron-Silver Link.png" number="0"
+[CARDv2] name="Sasha Necron" normalized="Sasha Necron" matched=false folder="Standard" image="images/Standard/Sasha Necron-Silver Link.png" number="2"
