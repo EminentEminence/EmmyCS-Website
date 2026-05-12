@@ -16,6 +16,13 @@ def _normalize_card_name(value: str) -> str:
     return "".join(char.lower() for char in value if char.isalnum())
 
 
+def _strip_duplicate_suffix(base_name: str) -> str:
+    stem, maybe_number = base_name.rsplit("-", 1) if "-" in base_name else (base_name, "")
+    if maybe_number.isdigit():
+        return stem
+    return base_name
+
+
 def _parse_printing_file_name(file_name: str) -> tuple[str, str]:
     base_name, _ = os.path.splitext(file_name)
     parts = base_name.split("-")
@@ -44,12 +51,19 @@ def MSEImport(MSECardData: str, cardSet: str) -> list[Card]:
     #Create initial card object
     
     cards = []
-    cardNames = []
-    #Split the MSE data into lines
+    cardsByName = {}
+    # Split MSE data into lines and strip optional metadata/header rows.
     lines = cardData.splitlines()
 
-    #Remove top Line
-    lines = lines[1:]
+    if lines and lines[0].lstrip("\ufeff").startswith("Set: "):
+        lines = lines[1:]
+
+    if lines and lines[0].strip().lower().startswith("name ||"):
+        lines = lines[1:]
+
+    def _set_if_present(card: Card, fields: list[str], index: int, attribute: str, side: str = "front"):
+        if index < len(fields) and fields[index] != "":
+            card.set(attribute, fields[index], side=side)
 
     images_root = os.path.join(
         os.path.dirname(__file__), "cards", "sets", cardSet, "cardData-files", "images"
@@ -73,33 +87,38 @@ def MSEImport(MSECardData: str, cardSet: str) -> list[Card]:
         if not line[0] or line[0].startswith("."):
             continue
 
-        if line[0] in cardNames:
-            continue
-        else:
-            cardNames.append(line[0])
+        card_name = line[0]
+        is_new_card = card_name not in cardsByName
 
-        card = Card()
+        if is_new_card:
+            card = Card()
+            cardsByName[card_name] = card
+            cards.append(card)
+        else:
+            card = cardsByName[card_name]
         #Front fields
-        card.set("name", line[0]) if length > 0 else None
-        card.set("manaCost", line[1]) if length > 1 else None
-        card.set("type", line[2]) if length > 2 else None
-        card.set("rarity", line[3]) if length > 3 else None
-        card.set("rulesText", line[4]) if length > 4 else None
-        card.set("flavourText", line[5]) if length > 5 else None
-        card.set("power", line[6]) if length > 6 else None
-        card.set("toughness", line[7]) if length > 7 else None
-        card.set("loyalty", line[8]) if length > 8 else None
+        _set_if_present(card, line, 0, "name")
+        _set_if_present(card, line, 1, "manaCost")
+        _set_if_present(card, line, 2, "type")
+        _set_if_present(card, line, 3, "rarity")
+        _set_if_present(card, line, 4, "rulesText")
+        _set_if_present(card, line, 5, "flavourText")
+        _set_if_present(card, line, 6, "power")
+        _set_if_present(card, line, 7, "toughness")
+        _set_if_present(card, line, 8, "loyalty")
 
         #Back fields
-        card.set("name", line[13], side="back") if length > 13 else None
-        card.set("manaCost", line[14], side="back") if length > 14 else None
-        card.set("type", line[15], side="back") if length > 15 else None
-        card.set("rulesText", line[16], side="back") if length > 16 else None
-        card.set("flavourText", line[17], side="back") if length > 17 else None
-        card.set("power", line[18], side="back") if length > 18 else None
-        card.set("toughness", line[19], side="back") if length > 19 else None
-        card.set("loyalty", line[20], side="back") if length > 20 else None
-        cards.append(card)
+        _set_if_present(card, line, 13, "name", side="back")
+        _set_if_present(card, line, 14, "manaCost", side="back")
+        _set_if_present(card, line, 15, "type", side="back")
+        _set_if_present(card, line, 16, "rulesText", side="back")
+        _set_if_present(card, line, 17, "flavourText", side="back")
+        _set_if_present(card, line, 18, "power", side="back")
+        _set_if_present(card, line, 19, "toughness", side="back")
+        _set_if_present(card, line, 20, "loyalty", side="back")
+        # Printings are loaded from image files once per unique card.
+        if not is_new_card:
+            continue
         
 
         #get printings
@@ -119,11 +138,28 @@ def MSEImport(MSECardData: str, cardSet: str) -> list[Card]:
         normalized_card_name = _normalize_card_name(card.name)
         for folder_name, folder_printings in available_printings_by_folder.items():
             for printing_file in folder_printings:
-                printing_card_name, artist = _parse_printing_file_name(printing_file)
-                if (
-                    printing_card_name
-                    and _normalize_card_name(printing_card_name) == normalized_card_name
-                ):
+                base_name, _ = os.path.splitext(printing_file)
+                base_name = _strip_duplicate_suffix(base_name)
+
+                artist = ""
+                matched = False
+
+                # Prefer exact card-name prefix matching so artist names can contain hyphens.
+                if base_name == card.name:
+                    matched = True
+                elif base_name.startswith(f"{card.name}-"):
+                    artist = base_name[len(card.name) + 1 :].strip()
+                    matched = True
+                else:
+                    printing_card_name, parsed_artist = _parse_printing_file_name(printing_file)
+                    if (
+                        printing_card_name
+                        and _normalize_card_name(printing_card_name) == normalized_card_name
+                    ):
+                        artist = parsed_artist
+                        matched = True
+
+                if matched:
                     abs_path = os.path.join(
                         cardSet,
                         "cardData-files",
