@@ -106,6 +106,8 @@ def displayCardView(set, cardName):
 
     selected_image_path = selected_printing.image if selected_printing is not None else ""
     selected_artist = selected_printing.artist if selected_printing is not None else "Unknown"
+    rules_text_html = card.rulesText.replace("\\n", "</p><p>").replace("\n", "</p><p>")
+    flavour_text_html = card.flavourText.replace("\\n", "<br>").replace("\n", "<br>")
 
     printingsCode = ""
     for printing in card.frontPrintings.printings:
@@ -124,9 +126,9 @@ def displayCardView(set, cardName):
               <hr>
               <h4>{card.type}</h4>
               <hr>
-              <p>{card.rulesText.replace('\\n','</p><p>').replace('\n','</p><p>')}</p>
+              <p>{rules_text_html}</p>
               <br>
-              <p><i>{card.flavourText.replace('\\n','<br>').replace('\n','<br>')}</i></p>
+              <p><i>{flavour_text_html}</i></p>
               <hr>
               <p>Illustrated By {selected_artist}</p>
             </section>
