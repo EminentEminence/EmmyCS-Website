@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dev-shell container">
+  <article class="dev-auth-card">
+    <p class="kicker">Protected Area</p>
+    <h1>Developer Login</h1>
+    <p class="dev-subtle">Enter your password to manage projects, skills, and hobbies.</p>
+
+    <form class="dev-form" method="post" action="{{ url_for('dev_login') }}">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required />
+      <button class="btn btn-primary" type="submit">Sign In</button>
+    </form>
+  </article>
+</section>
+{% endblock %}

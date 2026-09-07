@@ -1,0 +1,142 @@
+{% extends "temp_base.html" %}
+
+{% block content %}
+<section class="section container">
+  <div class="section-title-row">
+    <h2>Custom Sets</h2>
+    <p>Upload converter output JSON and edit set or card data. Local sets are merged into search, set browsing, and card detail routes.</p>
+  </div>
+
+  <article class="card">
+    <h3>Upload Set Data</h3>
+    <p class="dev-subtle">Upload converter JSON or a ZIP containing setInfo.xml and Images/. ZIP uploads store images server-side in the same set folder as set.json.</p>
+    <form action="{{ url_for('temp_custom_sets_upload') }}" method="post" enctype="multipart/form-data" class="temp-custom-form-grid">
+      <label>
+        Set payload (.json or .zip)
+        <input type="file" name="set_file" accept=".json,.zip,application/json,application/zip" required />
+      </label>
+      <label>
+        Optional Set Code Override (ZIP uploads)
+        <input type="text" name="set_code" placeholder="hsr" />
+      </label>
+      <button class="btn btn-primary" type="submit">Upload Set</button>
+    </form>
+  </article>
+</section>
+
+<section class="section container temp-custom-layout">
+  <article class="card">
+    <h3>Loaded Custom Sets</h3>
+    {% if custom_sets %}
+    <div class="temp-custom-set-list">
+      {% for set_record in custom_sets %}
+      <a class="set-card{% if selected_set and selected_set.code == set_record.code %} is-active{% endif %}" href="{{ url_for('temp_custom_sets', set=set_record.code) }}">
+        <span class="set-card__code">{{ set_record.code|upper }}</span>
+        <strong>{{ set_record.name }}</strong>
+        <span>{{ set_record.set_type }}</span>
+        <span>{{ set_record.card_count }} cards</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>No custom sets uploaded yet.</p>
+    {% endif %}
+  </article>
+
+  <article class="card">
+    <h3>Set Metadata</h3>
+    {% if selected_set %}
+    <form action="{{ url_for('temp_custom_sets_update', set_code=selected_set.code) }}" method="post" class="temp-custom-form-grid">
+      <label>
+        Set Name
+        <input type="text" name="name" value="{{ selected_set.name }}" required />
+      </label>
+      <label>
+        Set Type
+        <input type="text" name="set_type" value="{{ selected_set.set_type }}" required />
+      </label>
+      <label>
+        Released At
+        <input type="text" name="released_at" value="{{ selected_set.released_at or '' }}" placeholder="YYYY-MM-DD" />
+      </label>
+      <button class="btn btn-secondary" type="submit">Save Set</button>
+    </form>
+    {% else %}
+    <p>Select a set to edit metadata.</p>
+    {% endif %}
+  </article>
+</section>
+
+<section class="section container temp-custom-layout">
+  <article class="card">
+    <h3>Cards In Set</h3>
+    {% if selected_cards %}
+    <div class="temp-custom-card-list">
+      {% for card in selected_cards %}
+      <a class="temp-custom-card-item{% if selected_card and selected_card.id == card.id %} is-active{% endif %}" href="{{ url_for('temp_custom_sets', set=card.set, card=card.id) }}">
+        <strong>{{ card.name }}</strong>
+        <span>{{ card.collector_number }} | {{ card.rarity }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p>Select a set to view cards.</p>
+    {% endif %}
+  </article>
+
+  <article class="card">
+    <h3>Card Editor</h3>
+    {% if selected_set and selected_card %}
+    <form action="{{ url_for('temp_custom_set_card_update', set_code=selected_set.code, card_id=selected_card.id) }}" method="post" class="temp-custom-form-grid">
+      <label>
+        Name
+        <input type="text" name="name" value="{{ selected_card.name }}" required />
+      </label>
+      <label>
+        Mana Cost
+        <input type="text" name="mana_cost" value="{{ selected_card.mana_cost or '' }}" />
+      </label>
+      <label>
+        Type Line
+        <input type="text" name="type_line" value="{{ selected_card.type_line or '' }}" />
+      </label>
+      <label>
+        Oracle Text
+        <textarea name="oracle_text" rows="4">{{ selected_card.oracle_text or '' }}</textarea>
+      </label>
+      <label>
+        Flavor Text
+        <textarea name="flavor_text" rows="3">{{ selected_card.flavor_text or '' }}</textarea>
+      </label>
+      <label>
+        Collector Number
+        <input type="text" name="collector_number" value="{{ selected_card.collector_number or '' }}" />
+      </label>
+      <label>
+        Rarity
+        <input type="text" name="rarity" value="{{ selected_card.rarity or '' }}" />
+      </label>
+      <label>
+        Frame
+        <input type="text" name="frame" value="{{ selected_card.frame or '' }}" />
+      </label>
+      <label>
+        Power
+        <input type="text" name="power" value="{{ selected_card.power or '' }}" />
+      </label>
+      <label>
+        Toughness
+        <input type="text" name="toughness" value="{{ selected_card.toughness or '' }}" />
+      </label>
+      <label>
+        Loyalty
+        <input type="text" name="loyalty" value="{{ selected_card.loyalty or '' }}" />
+      </label>
+      <button class="btn btn-primary" type="submit">Save Card</button>
+    </form>
+    {% else %}
+    <p>Select a card to edit fields.</p>
+    {% endif %}
+  </article>
+</section>
+{% endblock %}

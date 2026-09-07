@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="hero container">
+  <p class="kicker">Available for freelance and part-time work</p>
+  <h1>{{ hero.name }}<span>{{ hero.role }}</span></h1>
+  <p class="hero-copy">{{ hero.tagline }}</p>
+  <div class="hero-cta">
+    <a class="btn btn-primary" href="#projects">View Projects</a>
+    <a class="btn btn-secondary" href="#hobbies">Side Hobbies</a>
+  </div>
+</section>
+
+<section id="projects" class="section container">
+  <div class="section-title-row">
+    <h2>Selected Projects</h2>
+    <p>Recent software work with practical impact.</p>
+  </div>
+  <div class="card-grid">
+    {% for project in projects %}
+    <article class="card">
+      <h3>{{ project.title }}</h3>
+      <p>{{ project.summary }}</p>
+      <span class="pill">{{ project.stack }}</span>
+      <p class="card-link-row">
+        <a class="project-link" href="{{ url_for('project_detail', slug=project.slug) }}">View project details</a>
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section id="skills" class="section container">
+  <div class="section-title-row">
+    <h2>Core Skills</h2>
+    <p>Tools and areas I work with regularly.</p>
+  </div>
+  <ul class="skills-list" aria-label="Skills list">
+    {% for skill in skills %}
+    <li>{{ skill }}</li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section id="hobbies" class="section container">
+  <div class="section-title-row">
+    <h2>Side Hobbies</h2>
+    <p>Interests that keep my creativity sharp.</p>
+  </div>
+  <div class="card-grid">
+    {% for hobby in hobbies %}
+    <article class="card card-hobby">
+      <h3>{{ hobby.name }}</h3>
+      <p>{{ hobby.description }}</p>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

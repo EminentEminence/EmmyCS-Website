@@ -1,0 +1,45 @@
+{% extends "temp_base.html" %}
+
+{% block content %}
+<section class="section container">
+  <a class="btn btn-secondary" href="{{ url_for('temp_sets') }}">Back to Sets</a>
+
+  <div class="temp-set-hero">
+    <div>
+      <p class="kicker">Set Detail</p>
+      <h1>{{ set_record.name }}</h1>
+      <p class="hero-copy">{{ set_record.released_at or 'Release date unavailable' }} | {{ set_record.set_type }}</p>
+    </div>
+    <div>
+      <span class="pill">{{ set_code|upper }}</span>
+    </div>
+  </div>
+
+  {% if cards.data %}
+  <div class="temp-results-grid">
+    {% for card in cards.data %}
+    <article class="temp-result-card tilt-card{% if card.foil %} foil-card{% endif %}">
+      <a class="temp-result-image-wrap" href="{{ url_for('temp_card_by_id', card_id=card.id) }}">
+        {% if card.image_uris %}
+        <img src="{{ card.image_uris.normal or card.image_uris.large or card.image_uris.png }}" alt="{{ card.name }}" />
+        {% elif card.card_faces and card.card_faces[0].image_uris %}
+        <img src="{{ card.card_faces[0].image_uris.normal or card.card_faces[0].image_uris.large or card.card_faces[0].image_uris.png }}" alt="{{ card.name }}" />
+        {% endif %}
+        {% if card.foil %}<span class="foil-overlay" aria-hidden="true"></span>{% endif %}
+      </a>
+      <div class="temp-result-body">
+        <h3><a href="{{ url_for('temp_card_by_id', card_id=card.id) }}">{{ card.name }}</a></h3>
+        <p>{{ card.type_line }}</p>
+        <p class="temp-result-meta">{{ card.collector_number }}</p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <article class="card">
+    <h3>No cards loaded</h3>
+    <p>This set currently has no cards returned by the API query.</p>
+  </article>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dev-shell container">
+  <div class="dev-header">
+    <div>
+      <p class="kicker">Admin Panel</p>
+      <h1>Content Manager</h1>
+      <p class="dev-subtle">Edit homepage content instantly and persist changes to disk.</p>
+    </div>
+    <form method="post" action="{{ url_for('dev_logout') }}">
+      <button class="btn btn-secondary" type="submit">Sign Out</button>
+    </form>
+  </div>
+
+  <div class="dev-grid">
+    <article class="dev-panel">
+      <h2>Projects</h2>
+      <form class="dev-form" method="post" action="{{ url_for('manage_projects') }}">
+        <input type="hidden" name="action" value="add" />
+        <label for="project-title">Title</label>
+        <input id="project-title" name="title" required />
+        <label for="project-slug">Slug (optional)</label>
+        <input id="project-slug" name="slug" placeholder="my-project-name" />
+        <label for="project-summary">Summary</label>
+        <textarea id="project-summary" name="summary" required></textarea>
+        <label for="project-stack">Stack</label>
+        <input id="project-stack" name="stack" required />
+        <label for="project-details">Detailed Overview</label>
+        <textarea id="project-details" name="details"></textarea>
+        <label for="project-images">Image URLs (one per line, optional)</label>
+        <textarea id="project-images" name="images" placeholder="https://example.com/screenshot1.png"></textarea>
+        <button class="btn btn-primary" type="submit">Add Project</button>
+      </form>
+
+      {% for project in content.projects %}
+      <form class="dev-form dev-item" method="post" action="{{ url_for('manage_projects') }}">
+        <input type="hidden" name="index" value="{{ loop.index0 }}" />
+        <label>Title</label>
+        <input name="title" value="{{ project.title }}" required />
+        <label>Slug</label>
+        <input name="slug" value="{{ project.slug }}" required />
+        <label>Summary</label>
+        <textarea name="summary" required>{{ project.summary }}</textarea>
+        <label>Stack</label>
+        <input name="stack" value="{{ project.stack }}" required />
+        <label>Detailed Overview</label>
+        <textarea name="details">{{ project.details }}</textarea>
+        <label>Image URLs (one per line)</label>
+        <textarea name="images">{% for image in project.images %}{{ image }}{% if not loop.last %}
+      {% endif %}{% endfor %}</textarea>
+        <div class="dev-actions">
+          <button class="btn btn-primary" type="submit" name="action" value="update">Save</button>
+          <button class="btn btn-danger" type="submit" name="action" value="delete">Delete</button>
+        </div>
+      </form>
+      {% endfor %}
+    </article>
+
+    <article class="dev-panel">
+      <h2>Skills</h2>
+      <form class="dev-form" method="post" action="{{ url_for('manage_skills') }}">
+        <input type="hidden" name="action" value="add" />
+        <label for="skill-value">Skill</label>
+        <input id="skill-value" name="value" required />
+        <button class="btn btn-primary" type="submit">Add Skill</button>
+      </form>
+
+      {% for skill in content.skills %}
+      <form class="dev-form dev-item" method="post" action="{{ url_for('manage_skills') }}">
+        <input type="hidden" name="index" value="{{ loop.index0 }}" />
+        <label>Skill</label>
+        <input name="value" value="{{ skill }}" required />
+        <div class="dev-actions">
+          <button class="btn btn-primary" type="submit" name="action" value="update">Save</button>
+          <button class="btn btn-danger" type="submit" name="action" value="delete">Delete</button>
+        </div>
+      </form>
+      {% endfor %}
+    </article>
+
+    <article class="dev-panel">
+      <h2>Hobbies</h2>
+      <form class="dev-form" method="post" action="{{ url_for('manage_hobbies') }}">
+        <input type="hidden" name="action" value="add" />
+        <label for="hobby-name">Hobby Name</label>
+        <input id="hobby-name" name="name" required />
+        <label for="hobby-description">Description</label>
+        <textarea id="hobby-description" name="description" required></textarea>
+        <button class="btn btn-primary" type="submit">Add Hobby</button>
+      </form>
+
+      {% for hobby in content.hobbies %}
+      <form class="dev-form dev-item" method="post" action="{{ url_for('manage_hobbies') }}">
+        <input type="hidden" name="index" value="{{ loop.index0 }}" />
+        <label>Name</label>
+        <input name="name" value="{{ hobby.name }}" required />
+        <label>Description</label>
+        <textarea name="description" required>{{ hobby.description }}</textarea>
+        <div class="dev-actions">
+          <button class="btn btn-primary" type="submit" name="action" value="update">Save</button>
+          <button class="btn btn-danger" type="submit" name="action" value="delete">Delete</button>
+        </div>
+      </form>
+      {% endfor %}
+    </article>
+  </div>
+</section>
+{% endblock %}

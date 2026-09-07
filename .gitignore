@@ -1,3 +1,11 @@
-magic/cardview.log
-magic/__pycache__/
-emmycs-dev.code-workspace
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.DS_Store
+WORKSPACE_FILE_INDEX.md
+requirements.txt
+MSE Exporter/
+MSE Exporter Output/
+tests/
+working/

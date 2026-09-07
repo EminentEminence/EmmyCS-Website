@@ -1,0 +1,45 @@
+{
+  "hero": {
+    "name": "Emmy",
+    "role": "A programmer with badly managed ADHD",
+    "tagline": "(Like seriously I start new projects every other day.)"
+  },
+  "skills": [
+    "Python & Flask",
+    "API Design",
+    "Automation",
+    "Java"
+  ],
+  "projects": [
+    {
+      "slug": "magic-the-gathering-endless-stack",
+      "title": "Magic the Gathering: Endless Stack",
+      "summary": "A Magic the Gathering based roguelite deckbuilder.",
+      "stack": "Python",
+      "details": "This a python based game which makes use of the Magic the Gathering rules system inside of a roguelite deckbuilder. In order to best support the multitude of cards that Magic offers it uses an algorithmic AI system to directly convert and card texts to code which can be executed. This is then extended through a simple modding system which is built off of Magic Set Editor to allow for the usage of completely custom cards without any coding or programming.",
+      "images": []
+    },
+    {
+      "slug": "eminent-magic-a-minecraft-mod",
+      "title": "Eminent Magic - A Minecraft mod",
+      "summary": "This is a mod for Minecraft which implements a highly complex magic and spellcasting system.",
+      "stack": "Java, 3D graphics",
+      "details": "This is a mod for Minecraft which implements a highly complex magic and spellcasting system.",
+      "images": []
+    },
+    {
+      "slug": "emmycs-this-website",
+      "title": "EmmyCS (This Website!)",
+      "summary": "The website which you are viewing this on.",
+      "stack": "HTML, Python, Unix, Public Networking",
+      "details": "This website is deployed on a self hosted unix server inside of a container running inside of a hypervisor and managed through a cloudflare domain.",
+      "images": []
+    }
+  ],
+  "hobbies": [
+    {
+      "name": "Magic the Gathering - Custom Cards",
+      "description": "I have made a bunch of custom Magic the Gathering cards. Most of which are based on existing media."
+    }
+  ]
+}
