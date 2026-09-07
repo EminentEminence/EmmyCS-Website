@@ -1,0 +1,96 @@
+{% extends "temp_base.html" %}
+
+{% block content %}
+<section class="section container temp-card-page">
+  <div class="temp-detail-header">
+    <div>
+      <p class="kicker">Card Detail</p>
+      <h1>{{ card.name }}</h1>
+      <p class="hero-copy">{{ card.type_line }}</p>
+    </div>
+    <div class="hero-cta">
+      <a class="btn btn-secondary" href="{{ url_for('temp_search') }}">Back to Search</a>
+      <a class="btn btn-primary" href="{{ card.scryfall_uri }}" target="_blank" rel="noreferrer">Open on Scryfall</a>
+    </div>
+  </div>
+
+  <div class="temp-detail-layout">
+    <aside class="temp-detail-media">
+      {% if gallery_images %}
+      <div class="temp-media-stack">
+        {% for slide in gallery_images %}
+        <figure class="temp-card-art tilt-card{% if card.foil %} foil-card{% endif %}">
+          <img src="{{ slide.image }}" alt="{{ card.name }} {{ slide.label }}" />
+          {% if card.foil %}<span class="foil-overlay" aria-hidden="true"></span>{% endif %}
+          <figcaption>{{ slide.label }}</figcaption>
+        </figure>
+        {% endfor %}
+      </div>
+      {% elif preview_image %}
+      <figure class="temp-card-art tilt-card{% if card.foil %} foil-card{% endif %}">
+        <img src="{{ preview_image }}" alt="{{ card.name }}" />
+        {% if card.foil %}<span class="foil-overlay" aria-hidden="true"></span>{% endif %}
+      </figure>
+      {% endif %}
+    </aside>
+
+    <article class="temp-detail-panel">
+      {% if printings and printings|length > 1 %}
+      <section class="project-section">
+        <h2>Printings</h2>
+        <div class="temp-printings-row">
+          {% for printing in printings %}
+          <a class="temp-printing-chip{% if printing.id == card.id %} is-active{% endif %}" href="{{ url_for('temp_card_by_id', card_id=printing.id) }}">
+            {{ printing.set|upper }} #{{ printing.collector_number or '?' }}
+            {% if printing.frame %}
+            <span>{{ printing.frame }}</span>
+            {% endif %}
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      <div class="temp-detail-grid">
+        <div>
+          <h2>Overview</h2>
+          <p>{{ card.oracle_text or card.flavor_text or "No oracle text available." }}</p>
+        </div>
+        <div>
+          <h2>Metadata</h2>
+          <dl class="temp-meta-list">
+            <div><dt>Set</dt><dd><a href="{{ url_for('temp_set_detail', set_code=card.set) }}">{{ card.set_name }}</a></dd></div>
+            <div><dt>Collector</dt><dd>{{ card.collector_number }}</dd></div>
+            <div><dt>Rarity</dt><dd>{{ card.rarity }}</dd></div>
+            <div><dt>Mana Value</dt><dd>{{ card.cmc }}</dd></div>
+            <div><dt>Colors</dt><dd>{{ card.colors|join(', ') if card.colors else 'Colorless' }}</dd></div>
+            <div><dt>Artist</dt><dd>{{ card.artist }}</dd></div>
+          </dl>
+        </div>
+      </div>
+
+      {% if card.prices %}
+      <section class="project-section">
+        <h2>Prices</h2>
+        <div class="temp-price-row">
+          {% for price_name, price_value in card.prices.items() %}
+          <span class="pill">{{ price_name|upper }}: {{ price_value or 'n/a' }}</span>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if card.legalities %}
+      <section class="project-section">
+        <h2>Legalities</h2>
+        <div class="temp-legalities">
+          {% for format_name, status in card.legalities.items() %}
+          <span class="temp-legality-chip">{{ format_name }}: {{ status }}</span>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+    </article>
+  </div>
+</section>
+{% endblock %}

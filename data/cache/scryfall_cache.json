@@ -1,0 +1,10 @@
+{
+  "/cards/card-123": {
+    "cached_at": 1788820088.8302577,
+    "payload": {
+      "id": "card-123",
+      "name": "Cached Card",
+      "object": "card"
+    }
+  }
+}

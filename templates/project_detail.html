@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="project-shell container">
+  <a class="btn btn-secondary" href="{{ url_for('home') }}#projects">Back to Projects</a>
+
+  <article class="project-page-card">
+    <p class="kicker">Project Deep Dive</p>
+    <h1>{{ project.title }}</h1>
+    <p class="hero-copy">{{ project.summary }}</p>
+    <span class="pill">{{ project.stack }}</span>
+
+    {% if project.images %}
+    <section class="project-section">
+      <h2>Project Gallery</h2>
+      <div class="project-slideshow" data-project-slideshow data-interval="4500" aria-label="Project image slideshow">
+        <button
+          class="slideshow-control slideshow-control-prev"
+          type="button"
+          data-slide="prev"
+          aria-label="Previous image"
+        >
+          ←
+        </button>
+
+        <div class="slideshow-track-wrap">
+          <div class="slideshow-track">
+            {% for image in project.images %}
+            <figure class="slideshow-slide{% if loop.first %} is-active{% endif %}" data-slide-index="{{ loop.index0 }}">
+              <img src="{{ image }}" alt="{{ project.title }} screenshot {{ loop.index }}" loading="lazy" />
+            </figure>
+            {% endfor %}
+          </div>
+        </div>
+
+        <button
+          class="slideshow-control slideshow-control-next"
+          type="button"
+          data-slide="next"
+          aria-label="Next image"
+        >
+          →
+        </button>
+      </div>
+
+      <div class="slideshow-dots" aria-label="Slideshow position">
+        {% for image in project.images %}
+        <button
+          class="slideshow-dot{% if loop.first %} is-active{% endif %}"
+          type="button"
+          data-dot-index="{{ loop.index0 }}"
+          aria-label="Go to slide {{ loop.index }}"
+        ></button>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="project-section">
+      <h2>Overview</h2>
+      <p>{{ project.details }}</p>
+    </section>
+  </article>
+</section>
+{% endblock %}

@@ -1,0 +1,60 @@
+{% if pack_cards %}
+<div class="pack-stack" id="pack-stack" aria-live="polite">
+  {% for card in pack_cards %}
+  <button
+    class="pack-card reveal-card {% if loop.first %}visible{% endif %}"
+    type="button"
+    data-card-index="{{ loop.index0 }}"
+    data-card-name="{{ card.name|e }}"
+    data-card-set="{{ card.set|default('')|e }}"
+    data-card-rarity="{{ card.rarity|default('')|e }}"
+    data-card-printing="{{ card.printing_type|default('')|e }}"
+    data-card-foil="{{ 'true' if card.foil else 'false' }}"
+    {% if not loop.first %}style="display: none;"{% endif %}
+  >
+    <span class="pack-card__art">
+      {% if card.image_uris %}
+      <img src="{{ card.image_uris.normal or card.image_uris.large or card.image_uris.png }}" alt="{{ card.name }}" />
+      {% elif card.card_faces and card.card_faces[0].image_uris %}
+      <img src="{{ card.card_faces[0].image_uris.normal or card.card_faces[0].image_uris.large or card.card_faces[0].image_uris.png }}" alt="{{ card.name }}" />
+      {% endif %}
+    </span>
+  </button>
+  {% endfor %}
+</div>
+
+<div class="pack-summary hidden" id="pack-summary">
+  <div class="section-title-row">
+    <h3>Cards Received</h3>
+  </div>
+  <div class="temp-results-grid">
+    {% for card in pack_cards %}
+    <article class="temp-result-card pack-result-card">
+      <div class="temp-result-image-wrap pack-result-image">
+        {% if card.image_uris %}
+        <img src="{{ card.image_uris.normal or card.image_uris.large or card.image_uris.png }}" alt="{{ card.name }}" />
+        {% elif card.card_faces and card.card_faces[0].image_uris %}
+        <img src="{{ card.card_faces[0].image_uris.normal or card.card_faces[0].image_uris.large or card.card_faces[0].image_uris.png }}" alt="{{ card.name }}" />
+        {% else %}
+        <div class="pack-result-placeholder">{{ card.name }}</div>
+        {% endif %}
+      </div>
+      <div class="temp-result-body">
+        <h3>{{ card.name }}</h3>
+        <p>{{ card.set|upper }} • {{ card.rarity|title }}</p>
+        <p class="temp-result-meta">{{ card.printing_type|replace('_', ' ')|title }} {% if card.foil %}• Foil{% endif %}</p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  <div class="hero-cta pack-actions">
+    <button class="btn btn-primary" type="button" id="reopen-pack">Open Another Pack</button>
+    <a class="btn btn-secondary" href="{{ url_for('temp_pack_opener') }}">Add New Filter</a>
+  </div>
+</div>
+{% else %}
+<article class="card">
+  <h3>No cards in pool</h3>
+  <p>Try broader filters or a different set to build a pack.</p>
+</article>
+{% endif %}

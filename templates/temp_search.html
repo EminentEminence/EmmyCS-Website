@@ -1,0 +1,69 @@
+{% extends "temp_base.html" %}
+
+{% block content %}
+<section class="section container temp-search-page">
+  <div class="section-title-row">
+    <h2>Search Results</h2>
+    <p>{{ results.total_cards or 0 }} cards found for "{{ search.query }}"</p>
+  </div>
+
+  <details class="temp-advanced-search">
+    <summary>Advanced Search</summary>
+    <form class="temp-filter-form" action="{{ url_for('temp_search') }}" method="get">
+      <div class="temp-filter-grid">
+        <label>Free Text<input name="q" value="{{ request.args.get('q', '') }}" /></label>
+        <label>Name<input name="name" value="{{ request.args.get('name', '') }}" /></label>
+        <label>Type<input name="type" value="{{ request.args.get('type', '') }}" /></label>
+        <label>Oracle<input name="oracle" value="{{ request.args.get('oracle', '') }}" /></label>
+        <label>Set<input name="set" value="{{ request.args.get('set', '') }}" /></label>
+        <label>Color<input name="color" value="{{ request.args.get('color', '') }}" /></label>
+        <label>Mana<input name="mana" value="{{ request.args.get('mana', '') }}" /></label>
+        <label>Rarity<input name="rarity" value="{{ request.args.get('rarity', '') }}" /></label>
+        <label>Power<input name="power" value="{{ request.args.get('power', '') }}" /></label>
+        <label>Toughness<input name="toughness" value="{{ request.args.get('toughness', '') }}" /></label>
+      </div>
+      <div class="hero-cta">
+        <button class="btn btn-primary" type="submit">Apply Filters</button>
+        <a class="btn btn-secondary" href="{{ url_for('temp_search') }}">Clear</a>
+      </div>
+    </form>
+  </details>
+
+  {% if results.data %}
+  <div class="temp-results-grid">
+    {% for card in results.data %}
+    <article class="temp-result-card tilt-card{% if card.foil %} foil-card{% endif %}">
+      <a class="temp-result-image-wrap" href="{{ url_for('temp_card_by_id', card_id=card.id) }}">
+        {% if card.image_uris %}
+        <img src="{{ card.image_uris.normal or card.image_uris.large or card.image_uris.png }}" alt="{{ card.name }}" />
+        {% elif card.card_faces and card.card_faces[0].image_uris %}
+        <img src="{{ card.card_faces[0].image_uris.normal or card.card_faces[0].image_uris.large or card.card_faces[0].image_uris.png }}" alt="{{ card.name }}" />
+        {% endif %}
+        {% if card.foil %}<span class="foil-overlay" aria-hidden="true"></span>{% endif %}
+      </a>
+      <div class="temp-result-body">
+        <h3><a href="{{ url_for('temp_card_by_id', card_id=card.id) }}">{{ card.name }}</a></h3>
+        <p>{{ card.type_line }}</p>
+        <p class="temp-result-meta">{{ card.set_name }} | {{ card.collector_number }}</p>
+        <span class="pill">{{ card.rarity }}</span>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <div class="temp-pager">
+    {% if search.page > 1 %}
+    <a class="btn btn-secondary" href="{{ previous_page_url }}">Previous</a>
+    {% endif %}
+    {% if results.has_more %}
+    <a class="btn btn-primary" href="{{ next_page_url }}">Next</a>
+    {% endif %}
+  </div>
+  {% else %}
+  <article class="card">
+    <h3>No results</h3>
+    <p>Try a broader query, a different set code, or a simpler search term.</p>
+  </article>
+  {% endif %}
+</section>
+{% endblock %}

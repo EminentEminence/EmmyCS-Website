@@ -1,0 +1,21 @@
+{% extends "temp_base.html" %}
+
+{% block content %}
+<section class="section container">
+  <div class="section-title-row">
+    <h2>Sets</h2>
+    <p>Browse release sets and open a set to view its cards.</p>
+  </div>
+
+  <div class="set-grid">
+    {% for set_record in sets %}
+    <a class="set-card" href="{{ url_for('temp_set_detail', set_code=set_record.code) }}">
+      <span class="set-card__code">{{ set_record.code|upper }}</span>
+      <strong>{{ set_record.name }}</strong>
+      <span>{{ set_record.released_at or 'No release date' }}</span>
+      <span>{{ set_record.set_type }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,330 @@
+{% extends "temp_base.html" %}
+
+{% block content %}
+<section class="section container pack-opening-page">
+  <div class="section-title-row">
+    <div>
+      <p class="kicker">Pack Opening</p>
+      <h2>{{ booster_type|title }} Booster</h2>
+    </div>
+    <div class="pack-open-meta">
+      {% if selected_set %}<span class="pill">Set: {{ selected_set }}</span>{% endif %}
+      <span class="pill">Pool: {{ pool_count }} cards</span>
+    </div>
+  </div>
+
+  <form class="pack-filter-form" method="get" action="{{ url_for('temp_pack_opener') }}">
+    <div class="temp-filter-grid">
+      <label>Set<input name="set" value="{{ request.args.get('set', '') }}" /></label>
+      <label>Name<input name="name" value="{{ request.args.get('name', '') }}" /></label>
+      <label>Type<input name="type" value="{{ request.args.get('type', '') }}" /></label>
+      <label>Rarity<input name="rarity" value="{{ request.args.get('rarity', '') }}" /></label>
+      <label>Color<input name="color" value="{{ request.args.get('color', '') }}" /></label>
+      <label>Text<input name="oracle" value="{{ request.args.get('oracle', '') }}" /></label>
+      <label>Mana<input name="mana" value="{{ request.args.get('mana', '') }}" /></label>
+      <label>Power<input name="power" value="{{ request.args.get('power', '') }}" /></label>
+      <label>Toughness<input name="toughness" value="{{ request.args.get('toughness', '') }}" /></label>
+    </div>
+    <div class="pack-controls">
+      <label class="toggle-wrap">
+        <span>Booster type</span>
+        <select name="booster_type">
+          <option value="play" {% if booster_type == 'play' %}selected{% endif %}>Play Booster</option>
+          <option value="collector" {% if booster_type == 'collector' %}selected{% endif %}>Collector Booster</option>
+        </select>
+      </label>
+      <button class="btn btn-primary" type="submit">Build Pack</button>
+      <a class="btn btn-secondary" href="{{ url_for('temp_pack_opener') }}">Reset</a>
+    </div>
+  </form>
+
+  <div class="pack-opening" data-pack-size="{{ pack_cards|length }}" data-booster-type="{{ booster_type }}">
+    {% if pack_cards %}
+    <div class="pack-stack" id="pack-stack" aria-live="polite">
+      {% for card in pack_cards %}
+      <button
+        class="pack-card reveal-card tilt-card{% if card.foil %} foil-card{% endif %}{% if loop.first %} visible{% endif %}"
+        type="button"
+        data-card-index="{{ loop.index0 }}"
+        data-card-name="{{ card.name|e }}"
+        data-card-set="{{ card.set|default('')|e }}"
+        data-card-rarity="{{ card.rarity|default('')|e }}"
+        data-card-printing="{{ card.printing_type|default('')|e }}"
+        data-card-foil="{{ 'true' if card.foil else 'false' }}"
+        {% if not loop.first %}style="display: none;"{% endif %}
+      >
+        <span class="pack-card__art">
+          {% if card.image_uris %}
+          <img src="{{ card.image_uris.normal or card.image_uris.large or card.image_uris.png }}" alt="{{ card.name }}" />
+          {% elif card.card_faces and card.card_faces[0].image_uris %}
+          <img src="{{ card.card_faces[0].image_uris.normal or card.card_faces[0].image_uris.large or card.card_faces[0].image_uris.png }}" alt="{{ card.name }}" />
+          {% endif %}
+          {% if card.foil %}<span class="foil-overlay" aria-hidden="true"></span>{% endif %}
+        </span>
+      </button>
+      {% endfor %}
+    </div>
+
+    <div class="pack-summary hidden" id="pack-summary">
+      <div class="section-title-row">
+        <h3>Cards Received</h3>
+      </div>
+      <div class="temp-results-grid">
+        {% for card in pack_cards %}
+        <article class="temp-result-card pack-result-card tilt-card{% if card.foil %} foil-card{% endif %}">
+          <div class="temp-result-image-wrap pack-result-image">
+            {% if card.image_uris %}
+            <img src="{{ card.image_uris.normal or card.image_uris.large or card.image_uris.png }}" alt="{{ card.name }}" />
+            {% elif card.card_faces and card.card_faces[0].image_uris %}
+            <img src="{{ card.card_faces[0].image_uris.normal or card.card_faces[0].image_uris.large or card.card_faces[0].image_uris.png }}" alt="{{ card.name }}" />
+            {% else %}
+            <div class="pack-result-placeholder">{{ card.name }}</div>
+            {% endif %}
+            {% if card.foil %}<span class="foil-overlay" aria-hidden="true"></span>{% endif %}
+          </div>
+          <div class="temp-result-body">
+            <h3>{{ card.name }}</h3>
+            <p>{{ card.set|upper }} • {{ card.rarity|title }}</p>
+            <p class="temp-result-meta">
+              {% set printing_key = (card.printing_type or 'normal') | lower %}
+              {% set printing_label = (card.printing_type or 'normal') | replace('_', ' ') | title %}
+              {% set finish_label = 'Foil' if card.foil else 'Nonfoil' %}
+              {% if printing_key in ['normal', 'foil'] %}
+                {{ finish_label }}
+              {% else %}
+                {{ printing_label }} • {{ finish_label }}
+              {% endif %}
+            </p>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      <div class="hero-cta pack-actions">
+        <button class="btn btn-primary" type="button" id="reopen-pack">Open Another Pack</button>
+        <a class="btn btn-secondary" href="{{ url_for('temp_pack_opener') }}">Add New Filter</a>
+      </div>
+    </div>
+    {% else %}
+    <article class="card">
+      <h3>No cards in pool</h3>
+      <p>Try broader filters or a different set to build a pack.</p>
+    </article>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+  function replacePackUI(html) {
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = html;
+
+    const replacementPack = wrapper.querySelector('.pack-opening');
+    const replacementForm = wrapper.querySelector('.pack-filter-form');
+    const existingPack = document.querySelector('.pack-opening');
+    const existingForm = document.querySelector('.pack-filter-form');
+
+    if (replacementPack && existingPack) {
+      existingPack.replaceWith(replacementPack);
+    }
+
+    if (replacementForm && existingForm) {
+      existingForm.replaceWith(replacementForm);
+    }
+
+    attachCardTilt();
+    attachPackAnimation();
+    bindPackForm();
+    bindReopenButton();
+  }
+
+  function getPackCards() {
+    return Array.from(document.querySelectorAll('.reveal-card'));
+  }
+
+  function attachPackAnimation() {
+    const stack = document.getElementById('pack-stack');
+    const summary = document.getElementById('pack-summary');
+    const cards = getPackCards();
+
+    if (!stack || !cards.length) return;
+
+    let dragging = null;
+    let revealIndex = 0;
+    let removed = false;
+
+    const updateVisibleCard = () => {
+      cards.forEach((card, index) => {
+        const isTop = index === revealIndex;
+        const isNext = index === revealIndex + 1;
+
+        card.style.display = isTop ? 'flex' : 'none';
+        card.classList.toggle('visible', isTop);
+        card.classList.toggle('peek-behind', false);
+
+        if (isTop) {
+          card.style.zIndex = String(cards.length - index);
+          card.style.transform = 'translate(0, 0) rotate(0deg)';
+          card.style.opacity = '1';
+        } else {
+          card.style.transform = 'translate(0, 0) rotate(0deg)';
+          card.style.opacity = '0';
+        }
+      });
+    };
+
+    const revealNextCard = () => {
+      const nextCard = cards[revealIndex + 1];
+      if (!nextCard) return;
+      nextCard.style.display = 'flex';
+      nextCard.classList.add('peek-behind');
+      nextCard.style.zIndex = String(cards.length - revealIndex - 1);
+      nextCard.style.transform = 'translate(0, 10px) scale(0.98)';
+      nextCard.style.opacity = '1';
+    };
+
+    const finishPack = () => {
+      if (stack) stack.style.display = 'none';
+      if (summary) summary.classList.remove('hidden');
+    };
+
+    const advanceCard = (cardEl) => {
+      if (removed) return;
+      removed = true;
+      cardEl.style.transition = 'transform 0.22s ease, opacity 0.22s ease';
+      cardEl.style.transform = 'translate(360px, -130px) rotate(18deg)';
+      cardEl.style.opacity = '0';
+
+      setTimeout(() => {
+        cardEl.style.display = 'none';
+        revealIndex += 1;
+        removed = false;
+        if (revealIndex >= cards.length) {
+          finishPack();
+          return;
+        }
+        revealNextCard();
+        updateVisibleCard();
+      }, 170);
+    };
+
+    cards.forEach((cardEl) => {
+      cardEl.addEventListener('pointerdown', (event) => {
+        if (cardEl.style.display === 'none') return;
+        dragging = {
+          el: cardEl,
+          startX: event.clientX,
+          startY: event.clientY,
+        };
+        revealNextCard();
+        cardEl.classList.add('is-dragging');
+        cardEl.setPointerCapture(event.pointerId);
+      });
+
+      cardEl.addEventListener('pointermove', (event) => {
+        if (!dragging || dragging.el !== cardEl) return;
+        const dx = event.clientX - dragging.startX;
+        const dy = event.clientY - dragging.startY;
+        const nextCard = cards[revealIndex + 1];
+        const centerDistance = Math.min(1, Math.hypot((dx / 180), (dy / 180)));
+        const centerBoost = 1 + (1 - centerDistance) * 4.5;
+        const maxPackTilt = 5;
+        const rawRotateY = (dx / 14) * centerBoost;
+        const rawRotateX = (-dy / 14) * centerBoost;
+        const rotateY = Math.max(-maxPackTilt, Math.min(maxPackTilt, rawRotateY));
+        const rotateX = Math.max(-maxPackTilt, Math.min(maxPackTilt, rawRotateX));
+
+        if (nextCard) {
+          nextCard.style.display = 'flex';
+          nextCard.classList.add('peek-behind');
+          nextCard.style.transform = `translate(0, 10px) scale(0.98) rotateX(${rotateX * 0.7}deg) rotateY(${rotateY * 0.7}deg)`;
+          nextCard.style.opacity = '1';
+        }
+        cardEl.style.transform = `translate(${dx}px, ${dy}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        if (Math.abs(dx) > 70 && !removed) {
+          advanceCard(cardEl);
+          dragging = null;
+        }
+      });
+
+      cardEl.addEventListener('pointerup', () => {
+        if (!dragging || dragging.el !== cardEl) return;
+        dragging = null;
+        cardEl.classList.remove('is-dragging');
+        if (cardEl.style.opacity === '0') return;
+        cardEl.style.transform = 'translate(0, 0) rotate(0deg)';
+      });
+
+      cardEl.addEventListener('pointercancel', () => {
+        dragging = null;
+        cardEl.classList.remove('is-dragging');
+        cardEl.style.transform = 'translate(0, 0) rotate(0deg)';
+      });
+    });
+
+    updateVisibleCard();
+  }
+
+  function getCurrentPackParams() {
+    const params = new URLSearchParams();
+
+    document.querySelectorAll('.pack-filter-form').forEach((form) => {
+      form.querySelectorAll('input, select').forEach((field) => {
+        if (!field.name) return;
+        if (field.type === 'button' || field.type === 'submit' || field.type === 'reset') return;
+        const value = String(field.value || '').trim();
+        if (value) {
+          params.set(field.name, value);
+        }
+      });
+    });
+
+    return params;
+  }
+
+  function bindPackForm() {
+    document.querySelectorAll('.pack-filter-form').forEach((form) => {
+      form.onsubmit = (event) => {
+        event.preventDefault();
+        const params = getCurrentPackParams();
+        const url = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+        window.history.replaceState({}, '', url);
+
+        fetch(url, {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        })
+          .then((response) => response.text())
+          .then((html) => replacePackUI(html))
+          .catch((error) => {
+            console.error('Pack filter refresh failed:', error);
+            window.location.href = url;
+          });
+      };
+    });
+  }
+
+  function bindReopenButton() {
+    document.querySelectorAll('#reopen-pack').forEach((button) => {
+      button.onclick = () => {
+        const params = getCurrentPackParams();
+        params.set('seed', String((Math.random() * 100000000) | 0));
+        const currentUrl = new URL(window.location.href);
+        currentUrl.search = params.toString();
+
+        fetch(currentUrl.toString(), {
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        })
+          .then((response) => response.text())
+          .then((html) => replacePackUI(html))
+          .catch((error) => {
+            console.error('Pack refresh failed:', error);
+            window.location.href = currentUrl.toString();
+          });
+      };
+    });
+  }
+
+  bindPackForm();
+  bindReopenButton();
+  attachPackAnimation();
+</script>
+{% endblock %}

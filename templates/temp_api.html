@@ -1,0 +1,27 @@
+{% extends "temp_base.html" %}
+
+{% block content %}
+<section class="section container">
+  <div class="section-title-row">
+    <h2>API Access</h2>
+    <p>Use these routes now so the app can later swap from Scryfall to a local database without changing the UI.</p>
+  </div>
+
+  <div class="card-grid">
+    {% for endpoint in endpoints %}
+    <article class="card temp-api-card">
+      <span class="pill">{{ endpoint.method }}</span>
+      <h3>{{ endpoint.path }}</h3>
+      <p>{{ endpoint.description }}</p>
+    </article>
+    {% endfor %}
+  </div>
+
+  <section class="project-section">
+    <h2>Suggested Flow</h2>
+    <p>
+      The UI talks to the service layer in tempApp.py, and the service layer talks to the Scryfall API now. Later, the service layer can be pointed at a local database with the same methods and routes.
+    </p>
+  </section>
+</section>
+{% endblock %}

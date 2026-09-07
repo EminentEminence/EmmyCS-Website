@@ -1,0 +1,81 @@
+{% extends "temp_base.html" %}
+
+{% block content %}
+<section class="temp-hero container">
+  <div class="temp-hero-copy">
+    <p class="kicker">Card search and API prototype</p>
+    <h1>Find cards, browse sets, and inspect data with a clean Scryfall-style layout.</h1>
+    <p class="hero-copy">
+      This temporary app is wired directly to the Scryfall API now and is structured so a local database layer can be dropped in later without changing the UI.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="{{ url_for('temp_search') }}">Search Cards</a>
+      <a class="btn btn-secondary" href="{{ url_for('temp_sets') }}">Browse Sets</a>
+    </div>
+  </div>
+
+  <div class="temp-hero-panel">
+    <div class="temp-panel-header">
+      <span class="kicker">Featured Card</span>
+      <a class="project-link" href="{{ url_for('temp_random') }}">Shuffle</a>
+    </div>
+
+    {% if featured_card %}
+    <article class="temp-feature-card tilt-card{% if featured_card.foil %} foil-card{% endif %}">
+      <a href="{{ url_for('temp_card_by_id', card_id=featured_card.id) }}" class="temp-feature-image-wrap">
+        {% if featured_card.image_uris %}
+        <img src="{{ featured_card.image_uris.normal or featured_card.image_uris.large or featured_card.image_uris.png }}" alt="{{ featured_card.name }}" />
+        {% elif featured_card.card_faces and featured_card.card_faces[0].image_uris %}
+        <img src="{{ featured_card.card_faces[0].image_uris.normal or featured_card.card_faces[0].image_uris.large or featured_card.card_faces[0].image_uris.png }}" alt="{{ featured_card.name }}" />
+        {% endif %}
+        {% if featured_card.foil %}<span class="foil-overlay" aria-hidden="true"></span>{% endif %}
+      </a>
+      <h2>{{ featured_card.name }}</h2>
+      <p>{{ featured_card.type_line }}</p>
+      <span class="pill">{{ featured_card.set_name }}</span>
+    </article>
+    {% else %}
+    <p class="dev-subtle">Featured card unavailable at the moment.</p>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section container">
+  <div class="section-title-row">
+    <h2>Entry Points</h2>
+    <p>Card search, set browsing, and the API endpoints are all accessible from here.</p>
+  </div>
+  <div class="card-grid">
+    <article class="card temp-summary-card">
+      <h3>Search</h3>
+      <p>Use free text or advanced fields like name, type, set, rarity, color, and mana value.</p>
+    </article>
+    <article class="card temp-summary-card">
+      <h3>Sets</h3>
+      <p>Browse release sets and open a set page to inspect all cards in the set.</p>
+    </article>
+    <article class="card temp-summary-card">
+      <h3>API</h3>
+      <p>Use the API routes now so the backend can later be swapped to a local database without changing the interface.</p>
+    </article>
+  </div>
+</section>
+
+{% if latest_sets %}
+<section class="section container">
+  <div class="section-title-row">
+    <h2>Recent Sets</h2>
+    <p>Latest release metadata from the API.</p>
+  </div>
+  <div class="set-grid">
+    {% for set_record in latest_sets %}
+    <a class="set-card" href="{{ url_for('temp_set_detail', set_code=set_record.code) }}">
+      <span class="set-card__code">{{ set_record.code|upper }}</span>
+      <strong>{{ set_record.name }}</strong>
+      <span>{{ set_record.set_type }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+{% endblock %}
