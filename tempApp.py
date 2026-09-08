@@ -1007,7 +1007,12 @@ def create_temp_app() -> Flask:
                             for image_key, image_value in image_uris.items():
                                 if not image_value:
                                     continue
-                                image_uris[image_key] = url_for("temp_custom_set_asset", set_code=set_code, asset_path=str(image_value).lstrip("/"))
+                                image_uris[image_key] = url_for(
+                                    "temp_custom_set_asset",
+                                    set_code=set_code,
+                                    asset_path=str(image_value).lstrip("/"),
+                                    _external=True,
+                                )
 
                         for face in card.get("card_faces", []) or []:
                             face_uris = face.get("image_uris")
@@ -1016,7 +1021,12 @@ def create_temp_app() -> Flask:
                             for image_key, image_value in face_uris.items():
                                 if not image_value:
                                     continue
-                                face_uris[image_key] = url_for("temp_custom_set_asset", set_code=set_code, asset_path=str(image_value).lstrip("/"))
+                                face_uris[image_key] = url_for(
+                                    "temp_custom_set_asset",
+                                    set_code=set_code,
+                                    asset_path=str(image_value).lstrip("/"),
+                                    _external=True,
+                                )
 
                     normalized = service.custom_store.save_uploaded_payload(payload)
                     flash(f"Imported ZIP set {set_code.upper()} with {len(normalized['cards'])} cards.", "success")
