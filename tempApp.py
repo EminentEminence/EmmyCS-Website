@@ -198,6 +198,58 @@ class ScryfallService:
         export_format = "csv" if "export/csv" in lowered or "format=csv" in lowered else "text"
         return self.fetch_deck_export(deck_path, export_format)
 
+    def fetch_deck_text_from_url(self, deck_url: str) -> str:
+        candidate = (deck_url or "").strip()
+        if not candidate:
+            raise RuntimeError("Deck URL is required.")
+
+        lowered = candidate.lower()
+        try:
+            if "moxfield.com" in lowered:
+                match = re.search(r"moxfield\.com/(?:decks|deck)/([^/?#]+)", candidate)
+                if not match:
+                    raise RuntimeError("Moxfield deck URL was malformed.")
+                deck_id = match.group(1)
+                api_url = f"https://api.moxfield.com/v2/decks/all/{deck_id}/"
+                request = Request(api_url, headers={"Accept": "application/json", "User-Agent": "WebsiteV2TempApp/1.0"})
+                with urlopen(request, timeout=12) as response:
+                    payload = json.loads(response.read().decode("utf-8"))
+                lines: list[str] = []
+                for section in ("mainBoard", "sideboard", "maybeboard"):
+                    for entry in payload.get(section, []) or []:
+                        quantity = int(entry.get("quantity") or 1)
+                        name = (entry.get("name") or entry.get("cardName") or "").strip()
+                        if not name:
+                            continue
+                        lines.append(f"{quantity} {name}")
+                if lines:
+                    return "\n".join(lines)
+                raise RuntimeError("Moxfield deck export did not contain any cards.")
+
+            if "scryfall.com" in lowered or "/decks/" in lowered:
+                return self.fetch_deck_export_for_url(candidate)
+
+            if "deckstats.net" in lowered and "export_txt=1" not in lowered:
+                return self._fetch_uri_text(candidate.rstrip("/") + "?include_comments=1&export_txt=1")
+
+            if "mtggoldfish.com" in lowered and "/download/" not in lowered:
+                return self._fetch_uri_text(candidate.rstrip("/") + "/download")
+
+            if "tappedout.net" in lowered and "fmt=csv" not in lowered:
+                return self._fetch_uri_text(candidate.rstrip("/") + "?fmt=csv")
+
+            return self._fetch_uri_text(candidate)
+        except RuntimeError:
+            raise
+        except Exception as error:  # pragma: no cover - defensive network fallback
+            raise RuntimeError(f"Unable to load deck from URL: {error}") from error
+
+    def _fetch_uri_text(self, url: str) -> str:
+        request = Request(url, headers={"Accept": "text/plain, text/csv, application/json", "User-Agent": "WebsiteV2TempApp/1.0"})
+        with urlopen(request, timeout=12) as response:
+            body = response.read()
+            return body.decode("utf-8", errors="replace")
+
     def parse_deck_list(self, raw_text: str) -> list[tuple[int, str, str | None, str | None]]:
         parsed: list[tuple[int, str, str | None, str | None]] = []
         for line in str(raw_text or "").splitlines():
@@ -268,7 +320,7 @@ class ScryfallService:
     def normalize_deck_build_response(self, raw_text: str, deck_url: str | None = None) -> list[dict[str, Any]]:
         source_text = raw_text
         if deck_url:
-            source_text = self.fetch_deck_export_for_url(deck_url)
+            source_text = self.fetch_deck_text_from_url(deck_url)
         if not source_text:
             return []
 
