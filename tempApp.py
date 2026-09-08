@@ -179,8 +179,10 @@ class ScryfallService:
     def build_query(self, args: dict[str, str]) -> str:
         parts: list[str] = []
         free_text = args.get("q", "").strip()
+        skip_default_game = False
         if free_text:
             parts.append(free_text)
+            skip_default_game = True
 
         field_map = {
             "name": "name",
@@ -199,8 +201,9 @@ class ScryfallService:
             value = args.get(field_name, "").strip()
             if value:
                 parts.append(self._format_query_clause(prefix, value))
+                skip_default_game = True
 
-        if args.get("game", "paper").strip():
+        if not skip_default_game and args.get("game", "paper").strip():
             parts.append(f"game:{args.get('game', 'paper').strip()}")
 
         if not parts:
@@ -290,24 +293,50 @@ class ScryfallService:
 
     def _filter_name_matches(self, cards: list[dict[str, Any]], query: str) -> list[dict[str, Any]]:
         cleaned = (query or "").strip()
-        if not cleaned or ":" in cleaned or any(token in {"or", "and", "not"} for token in cleaned.lower().split()):
+        if not cleaned:
+            return cards
+
+        lowered = cleaned.lower()
+        if any(token in {"or", "and", "not"} for token in lowered.split()):
             return cards
 
         normalized_query = re.sub(r"\s+", " ", cleaned).strip().lower()
-        exact_matches = []
-        fuzzy_matches = []
+        if normalized_query.startswith("name:"):
+            normalized_query = re.sub(r"^name:\s*", "", normalized_query).strip()
+        elif ":" in normalized_query:
+            field_prefix = normalized_query.split(":", 1)[0]
+            if field_prefix in {"name", "oracle", "type", "text", "set", "rarity", "color", "mana", "power", "toughness", "game"}:
+                normalized_query = normalized_query.split(":", 1)[1].strip()
+
+        normalized_query = normalized_query.strip().strip('"').strip()
+        if not normalized_query:
+            return cards
+
+        ranked_matches: list[tuple[int, int, str, dict[str, Any]]] = []
         for card in cards:
             if not isinstance(card, dict):
                 continue
             name = str(card.get("name") or "").strip().lower()
+            if not name:
+                continue
             if name == normalized_query:
-                exact_matches.append(card)
+                score = 1000
+            elif name.startswith(normalized_query):
+                score = 500
             elif normalized_query in name:
-                fuzzy_matches.append(card)
+                score = 200
+            else:
+                continue
+            ranked_matches.append((score, len(name), name, card))
 
-        if exact_matches:
-            return exact_matches
-        return fuzzy_matches or cards
+        if not ranked_matches:
+            return cards
+
+        ranked_matches.sort(key=lambda item: (-item[0], item[1], item[2]))
+        best = ranked_matches[0][3]
+        if ranked_matches[0][0] >= 1000:
+            return [card for _, _, _, card in ranked_matches if str(card.get("name") or "").strip().lower() == normalized_query]
+        return [best]
 
     def get_card_by_id(self, card_id: str) -> dict[str, Any]:
         local_card = self.custom_store.get_card_by_id(card_id)
