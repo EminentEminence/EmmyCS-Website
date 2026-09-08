@@ -149,6 +149,138 @@ class ScryfallService:
         except URLError as error:
             raise RuntimeError(str(error)) from error
 
+    def fetch_deck_export(self, deck_path: str, export_format: str = "text") -> str:
+        normalized_path = str(deck_path or "").strip().strip("/")
+        if not normalized_path:
+            raise RuntimeError("Deck path is required.")
+
+        export_format = (export_format or "text").strip().lower()
+        if export_format not in {"text", "csv"}:
+            raise RuntimeError("Unsupported deck export format.")
+
+        url = f"{self.api_base}/decks/{normalized_path}/export/{export_format}"
+        request = Request(
+            url,
+            headers={
+                "Accept": "text/plain, text/csv, application/json",
+                "User-Agent": "WebsiteV2TempApp/1.0",
+            },
+        )
+
+        try:
+            with urlopen(request, timeout=12) as response:
+                body = response.read()
+                return body.decode("utf-8", errors="replace")
+        except HTTPError as error:
+            try:
+                payload = error.read().decode("utf-8", errors="replace")
+                details = json.loads(payload).get("details") if payload.strip().startswith("{") else payload.strip()
+                raise RuntimeError(details or str(error)) from error
+            except json.JSONDecodeError:
+                raise RuntimeError(str(error)) from error
+        except URLError as error:
+            raise RuntimeError(str(error)) from error
+
+    def fetch_deck_export_for_url(self, deck_url: str) -> str:
+        candidate = (deck_url or "").strip()
+        if not candidate:
+            raise RuntimeError("Deck URL is required.")
+
+        lowered = candidate.lower()
+        if "/decks/" not in lowered:
+            raise RuntimeError("Only Scryfall-style deck URLs are supported.")
+
+        match = re.search(r"/decks/([^/?#]+)", candidate)
+        if not match:
+            raise RuntimeError("Deck URL did not contain a valid deck path.")
+
+        deck_path = match.group(1)
+        export_format = "csv" if "export/csv" in lowered or "format=csv" in lowered else "text"
+        return self.fetch_deck_export(deck_path, export_format)
+
+    def parse_deck_list(self, raw_text: str) -> list[tuple[int, str, str | None, str | None]]:
+        parsed: list[tuple[int, str, str | None, str | None]] = []
+        for line in str(raw_text or "").splitlines():
+            entry = line.strip()
+            if not entry or entry.startswith("//"):
+                continue
+
+            match = re.match(r"^(\d+)\s+(.+)$", entry)
+            if not match:
+                continue
+
+            quantity = max(int(match.group(1)), 1)
+            remainder = match.group(2).strip()
+            remainder = re.sub(r"^\[[^\]]+\]\s*", "", remainder)
+            remainder = re.sub(r"^\([^\)]+\)\s*", "", remainder)
+
+            if "//" in remainder:
+                remainder = remainder.split("//", 1)[0].strip()
+
+            collector_match = re.search(r"\((?:[A-Z0-9_]+)\)\s*(\d+)\s*$", remainder)
+            set_code = None
+            collector_number = None
+            if collector_match:
+                collector_number = collector_match.group(1)
+                prefix = remainder[: collector_match.start()].strip()
+                set_match = re.search(r"\(([A-Z0-9_]+)\)\s*\d+\s*$", remainder)
+                if set_match:
+                    set_code = set_match.group(1).upper()
+                remainder = prefix
+
+            set_match = re.search(r"\[([A-Z0-9_]+)\]", remainder)
+            if set_match:
+                set_code = set_match.group(1).upper()
+                remainder = remainder[: set_match.start()] + remainder[set_match.end():]
+
+            remainder = re.sub(r"\s+\([A-Z0-9_]+\)\s*\d+\s*$", "", remainder).strip()
+            name = remainder.strip()
+            if not name:
+                continue
+
+            parsed.append((quantity, name, set_code, collector_number))
+        return parsed
+
+    def resolve_deck_entry_card(self, name: str, set_code: str | None = None, collector_number: str | None = None) -> dict[str, Any] | None:
+        query_parts: list[str] = []
+        sanitized_name = name.strip()
+        if sanitized_name:
+            query_parts.append(f'name:"{sanitized_name}"')
+        if set_code:
+            query_parts.append(f"set:{set_code.lower()}")
+        if collector_number and set_code:
+            query_parts.append(f"number:{collector_number}")
+
+        query = " ".join(query_parts) or 'name:"Card"'
+        results = self.search_cards({"q": query, "unique": "prints", "page": "1"})
+        cards = results.get("data") if isinstance(results, dict) else []
+        for card in cards or []:
+            if isinstance(card, dict) and card.get("name"):
+                return card
+        if sanitized_name and "name:" in query:
+            fallback = self.search_cards({"q": f'name:"{sanitized_name}"', "unique": "prints", "page": "1"})
+            cards = fallback.get("data") if isinstance(fallback, dict) else []
+            for card in cards or []:
+                if isinstance(card, dict) and card.get("name"):
+                    return card
+        return None
+
+    def normalize_deck_build_response(self, raw_text: str, deck_url: str | None = None) -> list[dict[str, Any]]:
+        source_text = raw_text
+        if deck_url:
+            source_text = self.fetch_deck_export_for_url(deck_url)
+        if not source_text:
+            return []
+
+        cards: list[dict[str, Any]] = []
+        for quantity, name, set_code, collector_number in self.parse_deck_list(source_text):
+            card = self.resolve_deck_entry_card(name, set_code, collector_number)
+            if not card:
+                continue
+            for _ in range(quantity):
+                cards.append(card)
+        return cards
+
     def normalize_search_parameters(self, args: dict[str, str]) -> SearchParameters:
         query = self.build_query(args)
         page = self._parse_page_number(args.get("page", "1"))
@@ -1309,15 +1441,36 @@ def create_temp_app() -> Flask:
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
 
+    @app.get("/api/decks/<path:deck_path>/export/<export_format>")
+    @app.get("/decks/<path:deck_path>/export/<export_format>")
+    def api_deck_export(deck_path: str, export_format: str) -> Any:
+        try:
+            payload = service.fetch_deck_export(deck_path, export_format)
+            mimetype = "text/csv" if export_format.lower() == "csv" else "text/plain"
+            return Response(payload, mimetype=mimetype)
+        except RuntimeError as error:
+            return jsonify({"error": str(error)}), 502
+
     def api_compatibility_error(action: str) -> Any:
         return jsonify({
             "error": f"{action} is not available on this instance.",
-            "details": "This server exposes the read-only Scryfall-compatible API only. Supported routes are /api/search, /api/cards/<id>, /api/cards/<set>/<number>, /api/sets, and /api/random.",
+            "details": "This server exposes the read-only Scryfall-compatible API only. Supported routes are /api/search, /api/cards/<id>, /api/cards/<set>/<number>, /api/sets, /api/random, and /api/decks/<path>/export/<text|csv>.",
         }), 501
 
     @app.post("/api/build")
     def api_build() -> Any:
-        return api_compatibility_error("Deck build")
+        try:
+            payload = request.get_json(silent=True) or {}
+            deck_data = payload.get("data") or ""
+            deck_url = payload.get("url") or ""
+            cards = service.normalize_deck_build_response(deck_data, deck_url=deck_url)
+            if not cards:
+                return jsonify({"error": "No cards found in the supplied deck."}), 422
+
+            lines = [json.dumps(api_proxy_card_payload(card)) for card in cards]
+            return Response("\n".join(lines), mimetype="application/x-ndjson")
+        except RuntimeError as error:
+            return jsonify({"error": str(error)}), 502
 
     @app.post("/api/draft")
     def api_draft() -> Any:
