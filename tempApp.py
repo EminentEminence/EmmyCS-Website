@@ -17,7 +17,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
-from flask import Flask, abort, flash, jsonify, redirect, render_template, request, send_from_directory, url_for
+from flask import Flask, Response, abort, flash, jsonify, redirect, render_template, request, send_from_directory, url_for
 
 from booster_model import CollectorBoosterModel, MTGJSONClient, PlayBoosterModel, derive_printing_type
 from custom_set_store import CustomSetStore
@@ -508,42 +508,73 @@ def create_temp_app() -> Flask:
             flash(str(error), "error")
             return fallback
 
+    def proxied_image_url(image_url: str | None) -> str | None:
+        if not image_url:
+            return None
+        image_url = str(image_url).strip()
+        if not image_url:
+            return None
+        if image_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/", "/")):
+            return image_url
+        if image_url.startswith(("http://", "https://")):
+            return url_for("api_proxy_image", url=image_url, _external=True)
+        return image_url
+
+    def proxy_image_uris_for_card(card: dict[str, Any]) -> dict[str, Any]:
+        if not isinstance(card, dict):
+            return card
+
+        image_uris = card.get("image_uris")
+        if isinstance(image_uris, dict):
+            for key, value in list(image_uris.items()):
+                if not value:
+                    continue
+                image_uris[key] = proxied_image_url(str(value)) or value
+
+        for face in card.get("card_faces", []) or []:
+            if not isinstance(face, dict):
+                continue
+            face_uris = face.get("image_uris")
+            if isinstance(face_uris, dict):
+                for key, value in list(face_uris.items()):
+                    if not value:
+                        continue
+                    face_uris[key] = proxied_image_url(str(value)) or value
+
+        return card
+
     def card_preview_image(card: dict[str, Any]) -> str | None:
         if card.get("image_uris"):
             image_uris = card.get("image_uris", {})
-            return image_uris.get("normal") or image_uris.get("large") or image_uris.get("png")
+            candidate = image_uris.get("normal") or image_uris.get("large") or image_uris.get("png")
+            return proxied_image_url(candidate) or candidate
 
         for face in card.get("card_faces", []) or []:
             if face.get("image_uris"):
                 image_uris = face.get("image_uris", {})
-                return image_uris.get("normal") or image_uris.get("large") or image_uris.get("png")
+                candidate = image_uris.get("normal") or image_uris.get("large") or image_uris.get("png")
+                return proxied_image_url(candidate) or candidate
         return None
 
     def card_gallery_images(card: dict[str, Any]) -> list[dict[str, str]]:
         gallery: list[dict[str, str]] = []
         if card.get("image_uris"):
             image_uris = card.get("image_uris", {})
-            gallery.append(
-                {
-                    "label": "Front",
-                    "image": image_uris.get("png") or image_uris.get("large") or image_uris.get("normal") or "",
-                }
-            )
+            candidate = image_uris.get("png") or image_uris.get("large") or image_uris.get("normal") or ""
+            gallery.append({"label": "Front", "image": proxied_image_url(candidate) or candidate})
             return gallery
 
         for index, face in enumerate(card.get("card_faces", []) or []):
             image_uris = face.get("image_uris", {})
-            gallery.append(
-                {
-                    "label": face.get("name") or f"Face {index + 1}",
-                    "image": image_uris.get("png") or image_uris.get("large") or image_uris.get("normal") or "",
-                }
-            )
+            candidate = image_uris.get("png") or image_uris.get("large") or image_uris.get("normal") or ""
+            gallery.append({"label": face.get("name") or f"Face {index + 1}", "image": proxied_image_url(candidate) or candidate})
         return [item for item in gallery if item["image"]]
 
     def normalize_card_for_display(card: dict[str, Any] | None) -> dict[str, Any] | None:
         if not isinstance(card, dict):
             return card
+
+        card = proxy_image_uris_for_card(card)
 
         finish_values: list[str] = []
         raw_finishes = card.get("finishes") or card.get("finish") or []
@@ -1128,25 +1159,72 @@ def create_temp_app() -> Flask:
             flash("Card not found.", "error")
         return redirect(url_for("temp_custom_sets", set=set_code, card=card_id))
 
+    def api_proxy_card_payload(payload: Any) -> Any:
+        if isinstance(payload, dict):
+            payload = dict(payload)
+            for key, value in list(payload.items()):
+                payload[key] = api_proxy_card_payload(value)
+
+            image_uris = payload.get("image_uris")
+            if isinstance(image_uris, dict):
+                for key, value in list(image_uris.items()):
+                    if not value:
+                        continue
+                    image_uris[key] = proxied_image_url(str(value)) or value
+
+            for face in payload.get("card_faces", []) or []:
+                if not isinstance(face, dict):
+                    continue
+                face_uris = face.get("image_uris")
+                if isinstance(face_uris, dict):
+                    for key, value in list(face_uris.items()):
+                        if not value:
+                            continue
+                        face_uris[key] = proxied_image_url(str(value)) or value
+            return payload
+
+        if isinstance(payload, list):
+            return [api_proxy_card_payload(item) for item in payload]
+
+        return payload
+
+    @app.get("/api/proxy-image")
+    def api_proxy_image() -> Any:
+        remote_url = (request.args.get("url") or "").strip()
+        if not remote_url:
+            abort(400)
+        if not remote_url.startswith(("http://", "https://")):
+            abort(400)
+        if not remote_url.startswith(("https://cards.scryfall.io/", "https://api.scryfall.com/", "https://static.scryfall.io/")):
+            abort(403)
+
+        try:
+            with urlopen(Request(remote_url, headers={"User-Agent": "Mozilla/5.0"}), timeout=25) as response:
+                data = response.read()
+                mime = response.headers.get_content_type() or "image/jpeg"
+                return Response(data, mimetype=mime)
+        except Exception:
+            abort(502)
+
     @app.get("/api/search")
     def api_search() -> Any:
         params = service.normalize_search_parameters(request.args.to_dict(flat=True))
         try:
-            return jsonify(service.search_cards(params))
+            return jsonify(api_proxy_card_payload(service.search_cards(params)))
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
 
     @app.get("/api/cards/<card_id>")
     def api_card_by_id(card_id: str) -> Any:
         try:
-            return jsonify(service.get_card_by_id(card_id))
+            return jsonify(api_proxy_card_payload(service.get_card_by_id(card_id)))
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
 
     @app.get("/api/cards/<set_code>/<collector_number>")
     def api_card_by_set(set_code: str, collector_number: str) -> Any:
         try:
-            return jsonify(service.get_card_by_set_number(set_code, collector_number))
+            return jsonify(api_proxy_card_payload(service.get_card_by_set_number(set_code, collector_number)))
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
 
@@ -1155,7 +1233,7 @@ def create_temp_app() -> Flask:
         try:
             page_arg = request.args.get("page", "1") or "1"
             page = max(int(page_arg), 1)
-            return jsonify(service.get_sets(page=page))
+            return jsonify(api_proxy_card_payload(service.get_sets(page=page)))
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
 
@@ -1163,8 +1241,8 @@ def create_temp_app() -> Flask:
     def api_set_detail(set_code: str) -> Any:
         try:
             return jsonify({
-                "set": service.get_set(set_code),
-                "cards": service.get_cards_for_set(set_code),
+                "set": api_proxy_card_payload(service.get_set(set_code)),
+                "cards": api_proxy_card_payload(service.get_cards_for_set(set_code)),
             })
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
@@ -1172,7 +1250,7 @@ def create_temp_app() -> Flask:
     @app.get("/api/random")
     def api_random() -> Any:
         try:
-            return jsonify(service.get_random_card())
+            return jsonify(api_proxy_card_payload(service.get_random_card()))
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
 
