@@ -346,20 +346,50 @@ class CustomSetStore:
             if not value:
                 continue
 
+            quoted = raw_value.strip().startswith('"') and raw_value.strip().endswith('"')
             if prefix == "game":
                 continue
-            if prefix in {"set"} and str(card.get("set", "")).lower() != value.lower():
-                return False
-            if prefix in {"name"} and value.lower() not in str(card.get("name", "")).lower():
-                return False
-            if prefix in {"o", "oracle", "text"} and value.lower() not in str(card.get("oracle_text", "")).lower():
-                return False
-            if prefix in {"t", "type"} and value.lower() not in str(card.get("type_line", "")).lower():
-                return False
-            if prefix in {"r", "rarity"} and value.lower() not in str(card.get("rarity", "")).lower():
-                return False
-            if prefix in {"m", "mana"} and value.upper() not in str(card.get("mana_cost", "")).upper():
-                return False
+            if prefix in {"set"}:
+                if quoted:
+                    if str(card.get("set", "")).lower() != value.lower():
+                        return False
+                elif str(card.get("set", "")).lower() != value.lower():
+                    return False
+            if prefix in {"name"}:
+                card_name = str(card.get("name", "")).lower()
+                if quoted:
+                    if card_name != value.lower():
+                        return False
+                elif value.lower() not in card_name:
+                    return False
+            if prefix in {"o", "oracle", "text"}:
+                oracle_text = str(card.get("oracle_text", "")).lower()
+                if quoted:
+                    if oracle_text != value.lower():
+                        return False
+                elif value.lower() not in oracle_text:
+                    return False
+            if prefix in {"t", "type"}:
+                type_line = str(card.get("type_line", "")).lower()
+                if quoted:
+                    if type_line != value.lower():
+                        return False
+                elif value.lower() not in type_line:
+                    return False
+            if prefix in {"r", "rarity"}:
+                rarity = str(card.get("rarity", "")).lower()
+                if quoted:
+                    if rarity != value.lower():
+                        return False
+                elif value.lower() not in rarity:
+                    return False
+            if prefix in {"m", "mana"}:
+                mana_cost = str(card.get("mana_cost", "")).upper()
+                if quoted:
+                    if mana_cost != value.upper():
+                        return False
+                elif value.upper() not in mana_cost:
+                    return False
             if prefix in {"pow", "power"} and value != str(card.get("power", "")):
                 return False
             if prefix in {"tou", "toughness"} and value != str(card.get("toughness", "")):
@@ -377,7 +407,10 @@ class CustomSetStore:
             str(card.get("type_line", "")),
             str(card.get("set_name", "")),
         ]
-        return any(normalized in value.lower() for value in haystacks)
+        matches = [value.lower() for value in haystacks]
+        if normalized in {name.lower() for name in [str(card.get("name", ""))]}:
+            return True
+        return any(normalized in value for value in matches)
 
     def _match_color_clause(self, card: dict[str, Any], value: str) -> bool:
         normalized = value.strip().upper()

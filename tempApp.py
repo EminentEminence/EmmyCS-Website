@@ -213,6 +213,38 @@ class ScryfallService:
             return f'{prefix}:"{safe_value}"'
         return f"{prefix}:{value}"
 
+    def _looks_like_name_query(self, value: str) -> bool:
+        candidate = value.strip()
+        if not candidate:
+            return False
+        if re.search(r'[:()]', candidate):
+            return False
+        lowered = candidate.lower()
+        reserved = {
+            "game",
+            "name",
+            "oracle",
+            "type",
+            "text",
+            "set",
+            "rarity",
+            "color",
+            "mana",
+            "power",
+            "toughness",
+            "cmc",
+            "is",
+            "or",
+            "and",
+            "not",
+            "from",
+            "to",
+            "lang",
+        }
+        if any(token in reserved for token in lowered.split()):
+            return False
+        return True
+
     def search_cards(self, params: SearchParameters) -> dict[str, Any]:
         local_search = self.custom_store.search_cards(params.query, page=params.page, per_page=DEFAULT_RESULTS_PER_PAGE)
         set_filters = self._extract_set_filters(params.query)
@@ -237,21 +269,45 @@ class ScryfallService:
             "include_digital": str(params.include_digital).lower(),
         }
         remote_results = self.request_json("/cards/search", query_params)
+        remote_cards = remote_results.get("data", [])
+        filtered_remote_cards = self._filter_name_matches(remote_cards, params.query)
+        remote_results["data"] = filtered_remote_cards
+        remote_results["total_cards"] = len(filtered_remote_cards)
 
         if params.page != 1 or not local_search.data:
             return remote_results
 
-        remote_cards = remote_results.get("data", [])
-        seen_ids = {str(card.get("id")) for card in remote_cards if card.get("id")}
+        seen_ids = {str(card.get("id")) for card in filtered_remote_cards if card.get("id")}
         merged_local = [card for card in local_search.data if str(card.get("id")) not in seen_ids]
-        merged_cards = merged_local + remote_cards
+        merged_cards = merged_local + filtered_remote_cards
 
-        remote_total = int(remote_results.get("total_cards") or len(remote_cards))
+        remote_total = int(remote_results.get("total_cards") or len(filtered_remote_cards))
         return {
             **remote_results,
             "data": merged_cards,
             "total_cards": remote_total + max(local_search.total_cards, len(merged_local)),
         }
+
+    def _filter_name_matches(self, cards: list[dict[str, Any]], query: str) -> list[dict[str, Any]]:
+        cleaned = (query or "").strip()
+        if not cleaned or ":" in cleaned or any(token in {"or", "and", "not"} for token in cleaned.lower().split()):
+            return cards
+
+        normalized_query = re.sub(r"\s+", " ", cleaned).strip().lower()
+        exact_matches = []
+        fuzzy_matches = []
+        for card in cards:
+            if not isinstance(card, dict):
+                continue
+            name = str(card.get("name") or "").strip().lower()
+            if name == normalized_query:
+                exact_matches.append(card)
+            elif normalized_query in name:
+                fuzzy_matches.append(card)
+
+        if exact_matches:
+            return exact_matches
+        return fuzzy_matches or cards
 
     def get_card_by_id(self, card_id: str) -> dict[str, Any]:
         local_card = self.custom_store.get_card_by_id(card_id)
@@ -1080,6 +1136,24 @@ def create_temp_app() -> Flask:
             return jsonify(service.get_random_card())
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
+
+    def api_compatibility_error(action: str) -> Any:
+        return jsonify({
+            "error": f"{action} is not available on this instance.",
+            "details": "This server exposes the read-only Scryfall-compatible API only. Supported routes are /api/search, /api/cards/<id>, /api/cards/<set>/<number>, /api/sets, and /api/random.",
+        }), 501
+
+    @app.post("/api/build")
+    def api_build() -> Any:
+        return api_compatibility_error("Deck build")
+
+    @app.post("/api/draft")
+    def api_draft() -> Any:
+        return api_compatibility_error("Draft generation")
+
+    @app.post("/api/draftCube")
+    def api_draft_cube() -> Any:
+        return api_compatibility_error("Cube draft generation")
 
     return app
 
