@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import random
@@ -14,7 +15,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from flask import Flask, Response, abort, flash, jsonify, redirect, render_template, request, send_from_directory, url_for
@@ -508,7 +509,50 @@ def create_temp_app() -> Flask:
             flash(str(error), "error")
             return fallback
 
-    def proxied_image_url(image_url: str | None) -> str | None:
+    image_cache_root = Path(__file__).resolve().parent / "data" / "cache" / "images"
+    image_cache_root.mkdir(parents=True, exist_ok=True)
+
+    def normalized_remote_image_key(remote_url: str) -> str:
+        digest = hashlib.sha256(remote_url.encode("utf-8")).hexdigest()
+        parsed = urlparse(remote_url)
+        extension = Path(parsed.path).suffix.lower() or ".jpg"
+        if extension not in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}:
+            extension = ".jpg"
+        return f"{digest}{extension}"
+
+    def cache_remote_image(remote_url: str, cache_key: str | None = None) -> str | None:
+        if not remote_url:
+            return None
+        remote_url = str(remote_url).strip()
+        if not remote_url.startswith(("http://", "https://")):
+            return remote_url
+        if not remote_url.startswith(("https://cards.scryfall.io/", "https://api.scryfall.com/", "https://static.scryfall.io/")):
+            return remote_url
+
+        cache_name = cache_key or normalized_remote_image_key(remote_url)
+        cache_path = image_cache_root / cache_name
+        if not cache_path.exists():
+            try:
+                with urlopen(Request(remote_url, headers={"User-Agent": "Mozilla/5.0"}), timeout=25) as response:
+                    data = response.read()
+                    if not data:
+                        return None
+                    cache_path.write_bytes(data)
+            except Exception:
+                return None
+        return url_for("api_cached_image", image_key=cache_name, _external=True)
+
+    def card_image_cache_name(card: dict[str, Any] | None, image_key: str, image_url: str | None) -> str:
+        card_id = str((card or {}).get("id") or (card or {}).get("oracle_id") or (card or {}).get("scryfall_id") or "card").strip()
+        safe_card_id = re.sub(r"[^A-Za-z0-9._-]+", "_", card_id) or "card"
+        safe_key = re.sub(r"[^A-Za-z0-9._-]+", "_", str(image_key or "image")).strip("._-") or "image"
+        parsed = urlparse(str(image_url or ""))
+        suffix = Path(parsed.path).suffix.lower() or ".jpg"
+        if suffix not in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}:
+            suffix = ".jpg"
+        return f"{safe_card_id}-{safe_key}{suffix}"
+
+    def proxied_image_url(image_url: str | None, card: dict[str, Any] | None = None, image_key: str = "image") -> str | None:
         if not image_url:
             return None
         image_url = str(image_url).strip()
@@ -517,7 +561,8 @@ def create_temp_app() -> Flask:
         if image_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/", "/")):
             return image_url
         if image_url.startswith(("http://", "https://")):
-            return url_for("api_proxy_image", url=image_url, _external=True)
+            local_name = card_image_cache_name(card, image_key, image_url)
+            return cache_remote_image(image_url, local_name)
         return image_url
 
     def proxy_image_uris_for_card(card: dict[str, Any]) -> dict[str, Any]:
@@ -529,9 +574,9 @@ def create_temp_app() -> Flask:
             for key, value in list(image_uris.items()):
                 if not value:
                     continue
-                image_uris[key] = proxied_image_url(str(value)) or value
+                image_uris[key] = proxied_image_url(str(value), card=card, image_key=f"{key}") or value
 
-        for face in card.get("card_faces", []) or []:
+        for face_index, face in enumerate(card.get("card_faces", []) or []):
             if not isinstance(face, dict):
                 continue
             face_uris = face.get("image_uris")
@@ -539,7 +584,8 @@ def create_temp_app() -> Flask:
                 for key, value in list(face_uris.items()):
                     if not value:
                         continue
-                    face_uris[key] = proxied_image_url(str(value)) or value
+                    face_ref = f"face-{face_index}-{key}"
+                    face_uris[key] = proxied_image_url(str(value), card=card, image_key=face_ref) or value
 
         return card
 
@@ -1170,9 +1216,9 @@ def create_temp_app() -> Flask:
                 for key, value in list(image_uris.items()):
                     if not value:
                         continue
-                    image_uris[key] = proxied_image_url(str(value)) or value
+                    image_uris[key] = proxied_image_url(str(value), card=payload, image_key=f"{key}") or value
 
-            for face in payload.get("card_faces", []) or []:
+            for face_index, face in enumerate(payload.get("card_faces", []) or []):
                 if not isinstance(face, dict):
                     continue
                 face_uris = face.get("image_uris")
@@ -1180,13 +1226,25 @@ def create_temp_app() -> Flask:
                     for key, value in list(face_uris.items()):
                         if not value:
                             continue
-                        face_uris[key] = proxied_image_url(str(value)) or value
+                        face_uris[key] = proxied_image_url(str(value), card=payload, image_key=f"face-{face_index}-{key}") or value
             return payload
 
         if isinstance(payload, list):
             return [api_proxy_card_payload(item) for item in payload]
 
         return payload
+
+    @app.get("/api/images/<path:image_key>")
+    def api_cached_image(image_key: str) -> Any:
+        safe_key = Path(image_key).name
+        if not safe_key or safe_key in {".", ".."}:
+            abort(404)
+
+        cache_path = image_cache_root / safe_key
+        if not cache_path.exists() or not cache_path.is_file():
+            abort(404)
+
+        return send_from_directory(image_cache_root, safe_key, as_attachment=False)
 
     @app.get("/api/proxy-image")
     def api_proxy_image() -> Any:
@@ -1198,13 +1256,10 @@ def create_temp_app() -> Flask:
         if not remote_url.startswith(("https://cards.scryfall.io/", "https://api.scryfall.com/", "https://static.scryfall.io/")):
             abort(403)
 
-        try:
-            with urlopen(Request(remote_url, headers={"User-Agent": "Mozilla/5.0"}), timeout=25) as response:
-                data = response.read()
-                mime = response.headers.get_content_type() or "image/jpeg"
-                return Response(data, mimetype=mime)
-        except Exception:
+        cached_url = cache_remote_image(remote_url)
+        if not cached_url or cached_url.startswith(("http://", "https://")) and cached_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/")):
             abort(502)
+        return redirect(cached_url, code=302)
 
     @app.get("/api/search")
     def api_search() -> Any:
