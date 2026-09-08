@@ -1,0 +1,1330 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+spoiler set="Honkai: Star Rail">
+  exporter_version>2026-08-05.2/exporter_version>
+  <style>
+    <partition>A</partition>
+    <name>$STANDARD</name>
+  </style>
+  <style>
+    <partition>B</partition>
+    <name>borderless</name>
+  </style>
+  <style>
+    <partition>C</partition>
+    <name>cosmicon</name>
+  </style>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Evanescia Halcyone Evermore.A.Hoyoverse.png</image_file>
+    <name>Evanescia, Halcyone Evermore</name>
+    <mana_cost></mana_cost>
+    <mana_value>0</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>At the beginning of your upkeep, increase Certified Banger by X, where X is this creatures power.</oracle_text>
+    <rules>At the beginning of your upkeep, increase Certified Banger by X, where X is this creatures power.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>colorless</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0001</collector_number>
+    <number>0001</number>
+    <stats>
+      <power>1</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Evanescia, Halcyone Evermore</name>
+      <mana_cost></mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>At the beginning of your upkeep, increase Certified Banger by X, where X is this creatures power.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>1</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>colorless</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>C</partition>
+    <image_file>Images/C/Evanescia Overseer.C.ddengart.png</image_file>
+    <name>Evanescia, Overseer</name>
+    <mana_cost>2RR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>M</rarity>
+    <oracle_text>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</oracle_text>
+    <rules>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>red</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0001</collector_number>
+    <number>0001</number>
+    <stats>
+      <power>3</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Evanescia, Overseer</name>
+      <mana_cost>2RR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>3</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>red</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Hyacine.A.png</image_file>
+    <name>Hyacine</name>
+    <mana_cost>3W</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Remembrance </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Remembrance </subtype>
+    </type>
+    <rarity>R</rarity>
+    <oracle_text>Other creatures you control have lifelink.</oracle_text>
+    <rules>Other creatures you control have lifelink.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>white</colors>
+    <layout>adventure</layout>
+    <shape>adventure</shape>
+    <collector_number>0002</collector_number>
+    <number>0002</number>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Hyacine</name>
+      <mana_cost>3W</mana_cost>
+      <type_line>Legendary Creature — Remembrance </type_line>
+      <oracle_text>Other creatures you control have lifelink.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>2</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>white</colors>
+    </face>
+    <face side="back">
+      <name>Ika</name>
+      <mana_cost>1W</mana_cost>
+      <type_line>Memosprite</type_line>
+      <oracle_text>Whenever this creature deals combat damage, gain 1 life.
+2/1</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>white</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>C</partition>
+    <image_file>Images/C/Silver Wolf Lvl 999.C.Isome.png</image_file>
+    <name>Silver Wolf, Lvl 999</name>
+    <mana_cost>1UBR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>M</rarity>
+    <oracle_text>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</oracle_text>
+    <rules>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>multicolor</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0002</collector_number>
+    <number>0002</number>
+    <stats>
+      <power>*</power>
+      <toughness>*</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Silver Wolf, Lvl 999</name>
+      <mana_cost>1UBR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</oracle_text>
+      <flavor_text></flavor_text>
+      <power>*</power>
+      <toughness>*</toughness>
+      <loyalty></loyalty>
+      <colors>multicolor</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>C</partition>
+    <image_file>Images/C/Sparxie Queen of Arcadia.C.0_chae.png</image_file>
+    <name>Sparxie, Queen of Arcadia</name>
+    <mana_cost>2UR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>M</rarity>
+    <oracle_text>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</oracle_text>
+    <rules>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue, red, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0003</collector_number>
+    <number>0003</number>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Sparxie, Queen of Arcadia</name>
+      <mana_cost>2UR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</oracle_text>
+      <flavor_text></flavor_text>
+      <power>3</power>
+      <toughness>3</toughness>
+      <loyalty></loyalty>
+      <colors>blue, red, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Curtain Interruption.A.png</image_file>
+    <name>Curtain Interruption</name>
+    <mana_cost>1U</mana_cost>
+    <mana_value>2</mana_value>
+    <type_line>Instant</type_line>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Counter target spell unless its controller pays X where X is Certified Banger divided by 10. (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</oracle_text>
+    <rules>Counter target spell unless its controller pays X where X is Certified Banger divided by 10. (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0003</collector_number>
+    <number>0003</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Curtain Interruption</name>
+      <mana_cost>1U</mana_cost>
+      <type_line>Instant</type_line>
+      <oracle_text>Counter target spell unless its controller pays X where X is Certified Banger divided by 10. (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>blue</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>C</partition>
+    <image_file>Images/C/Yao Guang Seer Strategist.C.Hitohachan.png</image_file>
+    <name>Yao Guang, Seer Strategist</name>
+    <mana_cost>1UR</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>M</rarity>
+    <oracle_text>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</oracle_text>
+    <rules>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue, red, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0004</collector_number>
+    <number>0004</number>
+    <stats>
+      <power>1</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Yao Guang, Seer Strategist</name>
+      <mana_cost>1UR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>1</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>blue, red, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Stage Mishap.A.Hoyoverse.png</image_file>
+    <name>Stage Mishap</name>
+    <mana_cost>1B</mana_cost>
+    <mana_value>2</mana_value>
+    <type_line>Instant</type_line>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <oracle_text>Target creature gets -X/-X until end of turn, where X is Certified Banger divided by 10. If that creature dies, increase Certified Banger by 2 (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</oracle_text>
+    <rules>Target creature gets -X/-X until end of turn, where X is Certified Banger divided by 10. If that creature dies, increase Certified Banger by 2 (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>black</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0004</collector_number>
+    <number>0004</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Stage Mishap</name>
+      <mana_cost>1B</mana_cost>
+      <type_line>Instant</type_line>
+      <oracle_text>Target creature gets -X/-X until end of turn, where X is Certified Banger divided by 10. If that creature dies, increase Certified Banger by 2 (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>black</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Evanescia Overseer.A.Hoyoverse.png</image_file>
+    <name>Evanescia, Overseer</name>
+    <mana_cost>2RR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>R</rarity>
+    <oracle_text>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</oracle_text>
+    <rules>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>red</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0005</collector_number>
+    <number>0005</number>
+    <stats>
+      <power>3</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Evanescia, Overseer</name>
+      <mana_cost>2RR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>3</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>red</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Grand Punchline.A.Hoyoverse.png</image_file>
+    <name>Grand Punchline</name>
+    <mana_cost>3RR</mana_cost>
+    <mana_value>5</mana_value>
+    <type_line>Sorcery</type_line>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Creatures you control gain Punchline 2 until end of turn. (Whenever that creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 2)
+Creatures with Punchline deal damage equal to their Punchline value to any target.
+Increase Certified Banger by the number of creatures that dealt damage this way.</oracle_text>
+    <rules>Creatures you control gain Punchline 2 until end of turn. (Whenever that creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 2)
+Creatures with Punchline deal damage equal to their Punchline value to any target.
+Increase Certified Banger by the number of creatures that dealt damage this way.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>red</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0006</collector_number>
+    <number>0006</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Grand Punchline</name>
+      <mana_cost>3RR</mana_cost>
+      <type_line>Sorcery</type_line>
+      <oracle_text>Creatures you control gain Punchline 2 until end of turn. (Whenever that creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 2)
+Creatures with Punchline deal damage equal to their Punchline value to any target.
+Increase Certified Banger by the number of creatures that dealt damage this way.</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>red</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Improvised Bit.A.Hoyoverse.png</image_file>
+    <name>Improvised Bit</name>
+    <mana_cost>R</mana_cost>
+    <mana_value>1</mana_value>
+    <type_line>Instant</type_line>
+    <type>
+      <supertype>Instant</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <oracle_text>Target creature gains Punchline 1 until end of turn. If it already has Punchline, it deals 1 damage to any target. (Whenever that creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+Increase Certified Banger by 1</oracle_text>
+    <rules>Target creature gains Punchline 1 until end of turn. If it already has Punchline, it deals 1 damage to any target. (Whenever that creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+Increase Certified Banger by 1</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>red</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0007</collector_number>
+    <number>0007</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Improvised Bit</name>
+      <mana_cost>R</mana_cost>
+      <type_line>Instant</type_line>
+      <oracle_text>Target creature gains Punchline 1 until end of turn. If it already has Punchline, it deals 1 damage to any target. (Whenever that creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+Increase Certified Banger by 1</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>red</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Aha The Laughter.A.Hoyoverse.png</image_file>
+    <name>Aha, The Laughter</name>
+    <mana_cost>3BR</mana_cost>
+    <mana_value>5</mana_value>
+    <type_line>Legendary Creature — Elation Aeon </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation Aeon </subtype>
+    </type>
+    <rarity>M</rarity>
+    <oracle_text>As long as you control less than 4 Elation creatures, Aha isn’t a creature.
+Aha Instant — At the beginning of your end step, deal damage to each opponent equal to Certified Banger divided by 20 (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</oracle_text>
+    <rules>As long as you control less than 4 Elation creatures, Aha isn’t a creature.
+Aha Instant — At the beginning of your end step, deal damage to each opponent equal to Certified Banger divided by 20 (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>black, red, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0008</collector_number>
+    <number>0008</number>
+    <stats>
+      <power>0</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Aha, The Laughter</name>
+      <mana_cost>3BR</mana_cost>
+      <type_line>Legendary Creature — Elation Aeon </type_line>
+      <oracle_text>As long as you control less than 4 Elation creatures, Aha isn’t a creature.
+Aha Instant — At the beginning of your end step, deal damage to each opponent equal to Certified Banger divided by 20 (Certified Banger is shared between players. Whenever a player is instructed to increase Certified Banger, that value increases by the stated amount.)</oracle_text>
+      <flavor_text></flavor_text>
+      <power>0</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>black, red, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/The Phantasmoon Games.A.Hoyoverse.png</image_file>
+    <name>The Phantasmoon Games</name>
+    <mana_cost>4UBR</mana_cost>
+    <mana_value>7</mana_value>
+    <type_line>Legendary Enchantment</type_line>
+    <type>
+      <supertype>Legendary Enchantment</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>M</rarity>
+    <oracle_text>When The Phantasmoon Games enters the battlefield, each player’s Certified Banger becomes 0.
+Each player tracks their own Certified Banger.
+Creatures have Punchline X, where X is their base power.
+Whenever a player’s Certified Banger becomes 100 or greater, that player wins the game.</oracle_text>
+    <rules>When The Phantasmoon Games enters the battlefield, each player’s Certified Banger becomes 0.
+Each player tracks their own Certified Banger.
+Creatures have Punchline X, where X is their base power.
+Whenever a player’s Certified Banger becomes 100 or greater, that player wins the game.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>multicolor</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0009</collector_number>
+    <number>0009</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>The Phantasmoon Games</name>
+      <mana_cost>4UBR</mana_cost>
+      <type_line>Legendary Enchantment</type_line>
+      <oracle_text>When The Phantasmoon Games enters the battlefield, each player’s Certified Banger becomes 0.
+Each player tracks their own Certified Banger.
+Creatures have Punchline X, where X is their base power.
+Whenever a player’s Certified Banger becomes 100 or greater, that player wins the game.</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>multicolor</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Script Rewrite.A.Hoyoverse.png</image_file>
+    <name>Script Rewrite</name>
+    <mana_cost>2UB</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Sorcery</type_line>
+    <type>
+      <supertype>Sorcery</supertype>
+      <subtype></subtype>
+    </type>
+    <rarity>C</rarity>
+    <oracle_text>Exile target creature. Its controller creates a token that’s a copy of it, except it’s a 1/1 and loses all abilities
+Increase Certified Banger by 2</oracle_text>
+    <rules>Exile target creature. Its controller creates a token that’s a copy of it, except it’s a 1/1 and loses all abilities
+Increase Certified Banger by 2</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue, black, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0010</collector_number>
+    <number>0010</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Script Rewrite</name>
+      <mana_cost>2UB</mana_cost>
+      <type_line>Sorcery</type_line>
+      <oracle_text>Exile target creature. Its controller creates a token that’s a copy of it, except it’s a 1/1 and loses all abilities
+Increase Certified Banger by 2</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>blue, black, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Silver Wolf Lvl 999.A.Hoyoverse.png</image_file>
+    <name>Silver Wolf, Lvl 999</name>
+    <mana_cost>1UBR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>R</rarity>
+    <oracle_text>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</oracle_text>
+    <rules>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>multicolor</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0011</collector_number>
+    <number>0011</number>
+    <stats>
+      <power>*</power>
+      <toughness>*</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Silver Wolf, Lvl 999</name>
+      <mana_cost>1UBR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</oracle_text>
+      <flavor_text></flavor_text>
+      <power>*</power>
+      <toughness>*</toughness>
+      <loyalty></loyalty>
+      <colors>multicolor</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Sparxie Queen of Arcadia.A.Hoyoverse.png</image_file>
+    <name>Sparxie, Queen of Arcadia</name>
+    <mana_cost>2UR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</oracle_text>
+    <rules>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue, red, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0012</collector_number>
+    <number>0012</number>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Sparxie, Queen of Arcadia</name>
+      <mana_cost>2UR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</oracle_text>
+      <flavor_text></flavor_text>
+      <power>3</power>
+      <toughness>3</toughness>
+      <loyalty></loyalty>
+      <colors>blue, red, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Trailblazer Elation.A.Hoyoverse.png</image_file>
+    <name>Trailblazer, Elation</name>
+    <mana_cost>2UR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>R</rarity>
+    <oracle_text>Punchline 1
+1UR: Target creature you control gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.</oracle_text>
+    <rules>Punchline 1
+1UR: Target creature you control gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue, red, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0013</collector_number>
+    <number>0013</number>
+    <stats>
+      <power>2</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Trailblazer, Elation</name>
+      <mana_cost>2UR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 1
+1UR: Target creature you control gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>2</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>blue, red, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Yao Guang Seer Strategist.A.Hoyoverse.png</image_file>
+    <name>Yao Guang, Seer Strategist</name>
+    <mana_cost>1UR</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</oracle_text>
+    <rules>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue, red, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0014</collector_number>
+    <number>0014</number>
+    <stats>
+      <power>1</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Yao Guang, Seer Strategist</name>
+      <mana_cost>1UR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>1</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>blue, red, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Cat Mask.A.png</image_file>
+    <name>Cat Mask</name>
+    <mana_cost>3</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Artifact — Equipment </type_line>
+    <type>
+      <supertype>Legendary Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature gains ‘RR: This creature deals damage equal to its power to any target.’.
+Equip 2</oracle_text>
+    <rules>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature gains ‘RR: This creature deals damage equal to its power to any target.’.
+Equip 2</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>artifact</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0015</collector_number>
+    <number>0015</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Cat Mask</name>
+      <mana_cost>3</mana_cost>
+      <type_line>Legendary Artifact — Equipment </type_line>
+      <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature gains ‘RR: This creature deals damage equal to its power to any target.’.
+Equip 2</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>artifact</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Crow Mask.A.png</image_file>
+    <name>Crow Mask</name>
+    <mana_cost>3</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Artifact — Equipment </type_line>
+    <type>
+      <supertype>Legendary Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Whenever an opponent would reveal a card, they reveal their entire hand instead.
+Equip 2</oracle_text>
+    <rules>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Whenever an opponent would reveal a card, they reveal their entire hand instead.
+Equip 2</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>artifact</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0016</collector_number>
+    <number>0016</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Crow Mask</name>
+      <mana_cost>3</mana_cost>
+      <type_line>Legendary Artifact — Equipment </type_line>
+      <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Whenever an opponent would reveal a card, they reveal their entire hand instead.
+Equip 2</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>artifact</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Fin Mask.A.png</image_file>
+    <name>Fin Mask</name>
+    <mana_cost>3</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Artifact — Equipment </type_line>
+    <type>
+      <supertype>Legendary Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+
+Equip 2</oracle_text>
+    <rules>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+
+Equip 2</rules>
+    <flavor_text>Pearl</flavor_text>
+    <flavor>Pearl</flavor>
+    <colors>artifact</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0017</collector_number>
+    <number>0017</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Fin Mask</name>
+      <mana_cost>3</mana_cost>
+      <type_line>Legendary Artifact — Equipment </type_line>
+      <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+
+Equip 2</oracle_text>
+      <flavor_text>Pearl</flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>artifact</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Fox Mask.A.png</image_file>
+    <name>Fox Mask</name>
+    <mana_cost>3</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Artifact — Equipment </type_line>
+    <type>
+      <supertype>Legendary Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature has “Whenever this creature deals noncombat damage to a creature, it deals that much damage to that creature’s controller.”
+Equip 2</oracle_text>
+    <rules>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature has “Whenever this creature deals noncombat damage to a creature, it deals that much damage to that creature’s controller.”
+Equip 2</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>artifact</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0018</collector_number>
+    <number>0018</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Fox Mask</name>
+      <mana_cost>3</mana_cost>
+      <type_line>Legendary Artifact — Equipment </type_line>
+      <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature has “Whenever this creature deals noncombat damage to a creature, it deals that much damage to that creature’s controller.”
+Equip 2</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>artifact</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Octopus Mask.A.png</image_file>
+    <name>Octopus Mask </name>
+    <mana_cost>3</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Artifact — Equipment </type_line>
+    <type>
+      <supertype>Legendary Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Other creatures you control gain indestructible and are Goaded.
+Equip 2</oracle_text>
+    <rules>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Other creatures you control gain indestructible and are Goaded.
+Equip 2</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>artifact</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0019</collector_number>
+    <number>0019</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Octopus Mask </name>
+      <mana_cost>3</mana_cost>
+      <type_line>Legendary Artifact — Equipment </type_line>
+      <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Other creatures you control gain indestructible and are Goaded.
+Equip 2</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>artifact</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Rabbit Mask.A.png</image_file>
+    <name>Rabbit Mask</name>
+    <mana_cost>3</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Artifact — Equipment </type_line>
+    <type>
+      <supertype>Legendary Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>C</rarity>
+    <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Goaded creatures get +2/+2 as long as they are attacking a player other than this creature’s controller.
+Equip 2</oracle_text>
+    <rules>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Goaded creatures get +2/+2 as long as they are attacking a player other than this creature’s controller.
+Equip 2</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>artifact</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0020</collector_number>
+    <number>0020</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Rabbit Mask</name>
+      <mana_cost>3</mana_cost>
+      <type_line>Legendary Artifact — Equipment </type_line>
+      <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Goaded creatures get +2/+2 as long as they are attacking a player other than this creature’s controller.
+Equip 2</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>artifact</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Racoon Mask.A.png</image_file>
+    <name>Racoon Mask</name>
+    <mana_cost>3</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Artifact — Equipment </type_line>
+    <type>
+      <supertype>Legendary Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Creatures you control gain Punchline 1 if they do not already have Punchline.
+Equip 2</oracle_text>
+    <rules>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Creatures you control gain Punchline 1 if they do not already have Punchline.
+Equip 2</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>artifact</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0021</collector_number>
+    <number>0021</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Racoon Mask</name>
+      <mana_cost>3</mana_cost>
+      <type_line>Legendary Artifact — Equipment </type_line>
+      <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Creatures you control gain Punchline 1 if they do not already have Punchline.
+Equip 2</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>artifact</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>A</partition>
+    <image_file>Images/A/Wolf Mask.A.png</image_file>
+    <name>Wolf Mask</name>
+    <mana_cost>3</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Artifact — Equipment </type_line>
+    <type>
+      <supertype>Legendary Artifact</supertype>
+      <subtype>Equipment </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature has all keyword abilities of creatures exiled by it.
+Equip 2</oracle_text>
+    <rules>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature has all keyword abilities of creatures exiled by it.
+Equip 2</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>artifact</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0022</collector_number>
+    <number>0022</number>
+    <stats>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Wolf Mask</name>
+      <mana_cost>3</mana_cost>
+      <type_line>Legendary Artifact — Equipment </type_line>
+      <oracle_text>Equipped creature gains Punchline 2. If it already has Punchline, increase its Punchline value by 2 instead.
+Equipped creature has all keyword abilities of creatures exiled by it.
+Equip 2</oracle_text>
+      <flavor_text></flavor_text>
+      <power></power>
+      <toughness></toughness>
+      <loyalty></loyalty>
+      <colors>artifact</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>B</partition>
+    <image_file>Images/B/Evanescia Overseer.B.Hoyoverse.png</image_file>
+    <name>Evanescia, Overseer</name>
+    <mana_cost>2RR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>R</rarity>
+    <oracle_text>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</oracle_text>
+    <rules>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>red</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0023</collector_number>
+    <number>0023</number>
+    <stats>
+      <power>3</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Evanescia, Overseer</name>
+      <mana_cost>2RR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 1
+R: Deal 3 damage to target creature and increase Certified Banger by 2. You may activate this for every 20 Certified Banger per turn.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>3</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>red</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>B</partition>
+    <image_file>Images/B/Silver Wolf Lvl 999.B.Hoyoverse.png</image_file>
+    <name>Silver Wolf, Lvl 999</name>
+    <mana_cost>1UBR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>R</rarity>
+    <oracle_text>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</oracle_text>
+    <rules>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>multicolor</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0024</collector_number>
+    <number>0024</number>
+    <stats>
+      <power>*</power>
+      <toughness>*</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Silver Wolf, Lvl 999</name>
+      <mana_cost>1UBR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 2
+Silver Wolf, Lvl 999’s power and toughness are each equal to Certified Banger divided by 10 plus 1</oracle_text>
+      <flavor_text></flavor_text>
+      <power>*</power>
+      <toughness>*</toughness>
+      <loyalty></loyalty>
+      <colors>multicolor</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>B</partition>
+    <image_file>Images/B/Sparxie Queen of Arcadia.B.Hoyoverse.png</image_file>
+    <name>Sparxie, Queen of Arcadia</name>
+    <mana_cost>2UR</mana_cost>
+    <mana_value>4</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</oracle_text>
+    <rules>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue, red, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0025</collector_number>
+    <number>0025</number>
+    <stats>
+      <power>3</power>
+      <toughness>3</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Sparxie, Queen of Arcadia</name>
+      <mana_cost>2UR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Whenever this creature deals combat damage to a creature, that creature becomes goaded and gains ‘Punchline 1’ (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)</oracle_text>
+      <flavor_text></flavor_text>
+      <power>3</power>
+      <toughness>3</toughness>
+      <loyalty></loyalty>
+      <colors>blue, red, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+  <card>
+    <partition>B</partition>
+    <image_file>Images/B/Yao Guang Seer Strategist.B.Hoyoverse.png</image_file>
+    <name>Yao Guang, Seer Strategist</name>
+    <mana_cost>1UR</mana_cost>
+    <mana_value>3</mana_value>
+    <type_line>Legendary Creature — Elation </type_line>
+    <type>
+      <supertype>Legendary Creature</supertype>
+      <subtype>Elation </subtype>
+    </type>
+    <rarity>U</rarity>
+    <oracle_text>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</oracle_text>
+    <rules>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</rules>
+    <flavor_text></flavor_text>
+    <flavor></flavor>
+    <colors>blue, red, multicolor, horizontal</colors>
+    <layout>normal</layout>
+    <shape>normal</shape>
+    <collector_number>0026</collector_number>
+    <number>0026</number>
+    <stats>
+      <power>1</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+    </stats>
+    <faces>
+    <face side="front">
+      <name>Yao Guang, Seer Strategist</name>
+      <mana_cost>1UR</mana_cost>
+      <type_line>Legendary Creature — Elation </type_line>
+      <oracle_text>Punchline 1 (Whenever this creature becomes the target of a spell or ability, or deals combat damage to a player, increase Certified Banger by 1)
+If Certified Banger would increase, it increases by an additional 1 instead.</oracle_text>
+      <flavor_text></flavor_text>
+      <power>1</power>
+      <toughness>2</toughness>
+      <loyalty></loyalty>
+      <colors>blue, red, multicolor, horizontal</colors>
+    </face>
+    </faces>
+  </card>
+/spoiler>
