@@ -1621,6 +1621,56 @@ def create_temp_app() -> Flask:
 
         return payload
 
+    def tts_card_object_payload(card: dict[str, Any], index: int) -> dict[str, Any]:
+        card_name = str(card.get("name") or "Unknown Card").strip() or "Unknown Card"
+        image_uris = card.get("image_uris") if isinstance(card.get("image_uris"), dict) else {}
+        if not image_uris and isinstance(card.get("card_faces"), list):
+            for face in card["card_faces"]:
+                if not isinstance(face, dict):
+                    continue
+                face_uris = face.get("image_uris")
+                if isinstance(face_uris, dict):
+                    image_uris = face_uris
+                    break
+
+        face_url = None
+        for key in ("normal", "large", "png", "small"):
+            candidate = image_uris.get(key)
+            if candidate:
+                face_url = candidate
+                break
+        if not face_url:
+            face_url = "https://cards.scryfall.io/card/normal/front/00000000-0000-0000-0000-000000000000.jpg?format=image"
+
+        card_id = str(index + 1)
+        return {
+            "ObjectStates": [{
+                "Name": "Card",
+                "Nickname": card_name,
+                "CardID": index + 1,
+                "CustomDeck": {
+                    card_id: {
+                        "FaceURL": face_url,
+                        "BackURL": face_url,
+                        "NumHeight": 1,
+                        "NumWidth": 1,
+                        "BackIsHidden": True,
+                    }
+                },
+                "Transform": {
+                    "posX": 0,
+                    "posY": 3,
+                    "posZ": 0,
+                    "rotX": 0,
+                    "rotY": 180,
+                    "rotZ": 0,
+                    "scaleX": 1,
+                    "scaleY": 1,
+                    "scaleZ": 1,
+                },
+            }],
+        }
+
     @app.get("/api/images/<path:image_key>")
     def api_cached_image(image_key: str) -> Any:
         safe_key = Path(image_key).name
@@ -1727,7 +1777,7 @@ def create_temp_app() -> Flask:
             if not cards:
                 return jsonify({"error": "No cards found in the supplied deck."}), 422
 
-            lines = [json.dumps(api_proxy_card_payload(card)) for card in cards]
+            lines = [json.dumps(tts_card_object_payload(card, index)) for index, card in enumerate(cards)]
             return Response("\n".join(lines), mimetype="application/x-ndjson")
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
