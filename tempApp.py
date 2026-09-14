@@ -18,7 +18,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode, urlparse
+from urllib.parse import quote, urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from flask import Flask, Response, abort, flash, jsonify, redirect, render_template, request, send_from_directory, url_for
@@ -37,6 +37,7 @@ DEFAULT_SORT_ORDER = "released"
 DEFAULT_SORT_DIRECTION = "desc"
 DEFAULT_RESULTS_PER_PAGE = 12
 CUSTOM_SETS_STORAGE_ENV = "CUSTOM_SETS_STORAGE_DIR"
+SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "https://magic.emmycs.co.uk").rstrip("/")
 
 
 def custom_sets_storage_root() -> Path:
@@ -297,7 +298,7 @@ class ScryfallService:
                 except Exception:
                     html_text = self._fetch_uri_text(candidate)
                     names: list[str] = []
-                    for _, text in re.findall(r'<a[^>]*href=["\'][^"\']+["\'][^>]*>(.*?)</a>', html_text, flags=re.IGNORECASE | re.DOTALL):
+                    for text in re.findall(r'<a[^>]*href=["\'][^"\']+["\'][^>]*>(.*?)</a>', html_text, flags=re.IGNORECASE | re.DOTALL):
                         name = html.unescape(re.sub(r'<[^>]+>', '', text)).strip()
                         if name:
                             names.append(name)
@@ -923,7 +924,7 @@ def create_temp_app() -> Flask:
         if image_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/", "/")):
             return image_url
         if image_url.startswith(("http://", "https://")):
-            return url_for("api_proxy_image", url=image_url, _external=True)
+            return f"{SITE_BASE_URL}/api/proxy-image?url={quote(image_url, safe='')}"
         return image_url
 
     def proxy_image_uris_for_card(card: dict[str, Any]) -> dict[str, Any]:
