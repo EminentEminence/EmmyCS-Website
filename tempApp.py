@@ -1509,6 +1509,83 @@ def create_temp_app() -> Flask:
 
         return payload
 
+    def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict[str, Any]:
+        if not isinstance(card, dict):
+            return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": "https://i.stack.imgur.com/787gj.png", "BackURL": "https://i.stack.imgur.com/787gj.png", "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
+
+        face_url = None
+        back_url = "https://i.stack.imgur.com/787gj.png"
+        name = str(card.get("name") or "Card").strip() or "Card"
+        description = str(card.get("oracle_text") or card.get("text") or "").strip()
+        oracle_id = str(card.get("oracle_id") or card.get("id") or "").strip()
+
+        image_uris = card.get("image_uris") if isinstance(card.get("image_uris"), dict) else {}
+        if image_uris:
+            face_url = image_uris.get("normal") or image_uris.get("large") or image_uris.get("png") or image_uris.get("small")
+
+        card_faces = card.get("card_faces") if isinstance(card.get("card_faces"), list) else []
+        if card_faces:
+            front_face = card_faces[0] if isinstance(card_faces[0], dict) else {}
+            front_image = front_face.get("image_uris") if isinstance(front_face.get("image_uris"), dict) else {}
+            if front_image:
+                face_url = front_image.get("normal") or front_image.get("large") or front_image.get("png") or front_image.get("small") or face_url
+
+            if len(card_faces) > 1:
+                back_face = card_faces[1] if isinstance(card_faces[1], dict) else {}
+                back_image = back_face.get("image_uris") if isinstance(back_face.get("image_uris"), dict) else {}
+                if back_image:
+                    back_url = back_image.get("normal") or back_image.get("large") or back_image.get("png") or back_image.get("small") or back_url
+
+        if face_url:
+            face_url = proxied_image_url(str(face_url), card=card, image_key=f"tts-front-{card_id_index}") or face_url
+        if back_url:
+            back_url = proxied_image_url(str(back_url), card=card, image_key=f"tts-back-{card_id_index}") or back_url
+
+        card_obj = {
+            "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
+            "Name": "Card",
+            "Nickname": name,
+            "Description": description,
+            "Memo": oracle_id,
+            "CardID": card_id_index * 100,
+            "CustomDeck": {
+                str(card_id_index): {
+                    "FaceURL": face_url or "https://i.stack.imgur.com/787gj.png",
+                    "BackURL": back_url,
+                    "NumWidth": 1,
+                    "NumHeight": 1,
+                    "Type": 0,
+                    "BackIsHidden": True,
+                    "UniqueBack": False,
+                }
+            },
+        }
+
+        if card_faces and len(card_faces) > 1:
+            back_name = str((card_faces[1] or {}).get("name") or name).strip() or name
+            back_obj = {
+                "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
+                "Name": "Card",
+                "Nickname": back_name,
+                "Description": str((card_faces[1] or {}).get("oracle_text") or description or "").strip(),
+                "Memo": oracle_id,
+                "CardID": card_id_index * 100 + 1,
+                "CustomDeck": {
+                    str(card_id_index + 1): {
+                        "FaceURL": back_url,
+                        "BackURL": "https://i.stack.imgur.com/787gj.png",
+                        "NumWidth": 1,
+                        "NumHeight": 1,
+                        "Type": 0,
+                        "BackIsHidden": True,
+                        "UniqueBack": False,
+                    }
+                },
+            }
+            card_obj["States"] = {2: back_obj}
+
+        return card_obj
+
     @app.get("/api/images/<path:image_key>")
     def api_cached_image(image_key: str) -> Any:
         safe_key = Path(image_key).name
@@ -1615,7 +1692,7 @@ def create_temp_app() -> Flask:
             if not cards:
                 return jsonify({"error": "No cards found in the supplied deck."}), 422
 
-            lines = [json.dumps(api_proxy_card_payload(card)) for card in cards]
+            lines = [json.dumps(tts_native_card_object(card, index + 1)) for index, card in enumerate(cards)]
             return Response("\n".join(lines), mimetype="application/x-ndjson")
         except RuntimeError as error:
             return jsonify({"error": str(error)}), 502
