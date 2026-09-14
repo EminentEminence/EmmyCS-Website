@@ -865,6 +865,20 @@ class ScryfallService:
             if isinstance(card, dict):
                 proxy_remote_card_images(card)
 
+        simplified_query = params.query.strip().lower()
+        bare_name_query = re.sub(r"^name:\s*", "", simplified_query).strip()
+        bare_name_query = re.sub(r"\s+", " ", bare_name_query).strip().strip('"')
+        contains_operator = ":" in simplified_query or bool(re.search(r"(^|\s)(or|and|not)(?=\s|$)", simplified_query))
+        if bare_name_query and filtered_remote_cards and not contains_operator:
+            exact_name_matches = [
+                card for card in filtered_remote_cards
+                if isinstance(card, dict) and str(card.get("name") or "").strip().lower() == bare_name_query
+            ]
+            if exact_name_matches:
+                best_match = dict(exact_name_matches[0])
+                proxy_remote_card_images(best_match)
+                return {**best_match, "object": "card"}
+
         if params.query.strip().lower().startswith("name:") and filtered_remote_cards:
             best_match = dict(filtered_remote_cards[0])
             proxy_remote_card_images(best_match)
