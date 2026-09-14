@@ -205,6 +205,51 @@ class ScryfallService:
         export_format = "csv" if "export/csv" in lowered or "format=csv" in lowered else "text"
         return self.fetch_deck_export(deck_path, export_format)
 
+    def _fetch_moxfield_deck_payload(self, deck_url: str) -> dict[str, Any]:
+        match = re.search(r"moxfield\.com/(?:decks|deck)/([^/?#]+)", deck_url)
+        if not match:
+            raise RuntimeError("Moxfield deck URL was malformed.")
+        deck_id = match.group(1)
+        api_url = f"https://api2.moxfield.com/v2/decks/all/{deck_id}/"
+        request = Request(
+            api_url,
+            headers={
+                "Accept": "application/json, text/plain, */*",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+                "Origin": "https://moxfield.com",
+                "Referer": "https://moxfield.com/",
+            },
+        )
+        with urlopen(request, timeout=12) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        if not isinstance(payload, dict):
+            raise RuntimeError("Moxfield deck export did not contain any cards.")
+        return payload
+
+    def _deck_cards_from_moxfield_payload(self, payload: dict[str, Any]) -> list[dict[str, Any]]:
+        cards: list[dict[str, Any]] = []
+        board_sections = ("mainboard", "mainBoard", "sideboard", "maybeboard", "commanders", "companions", "attractions", "stickers")
+
+        for section in board_sections:
+            section_data = payload.get(section) or {}
+            if not isinstance(section_data, dict):
+                continue
+            for entry_name, entry in section_data.items():
+                if not isinstance(entry, dict):
+                    continue
+                quantity = max(int(entry.get("quantity") or 1), 1)
+                card = entry.get("card") if isinstance(entry.get("card"), dict) else {}
+                if not isinstance(card, dict) or not str(card.get("name") or entry_name or "").strip():
+                    continue
+                normalized_card = dict(card)
+                normalized_card.setdefault("object", "card")
+                normalized_card.setdefault("name", str(entry_name).strip())
+                normalized_card.setdefault("id", str(card.get("scryfall_id") or card.get("id") or entry_name).strip())
+                for _ in range(quantity):
+                    cards.append(normalized_card)
+
+        return cards
+
     def fetch_deck_text_from_url(self, deck_url: str, allow_card_by_card_fallback: bool = True) -> str:
         candidate = (deck_url or "").strip()
         if not candidate:
@@ -213,23 +258,7 @@ class ScryfallService:
         lowered = candidate.lower()
         try:
             if "moxfield.com" in lowered:
-                match = re.search(r"moxfield\.com/(?:decks|deck)/([^/?#]+)", candidate)
-                if not match:
-                    raise RuntimeError("Moxfield deck URL was malformed.")
-                deck_id = match.group(1)
-                api_url = f"https://api2.moxfield.com/v2/decks/all/{deck_id}/"
-                request = Request(
-                    api_url,
-                    headers={
-                        "Accept": "application/json, text/plain, */*",
-                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
-                        "Origin": "https://moxfield.com",
-                        "Referer": "https://moxfield.com/",
-                    },
-                )
-                with urlopen(request, timeout=12) as response:
-                    payload = json.loads(response.read().decode("utf-8"))
-
+                payload = self._fetch_moxfield_deck_payload(candidate)
                 lines: list[str] = []
                 board_sections = ("mainboard", "mainBoard", "sideboard", "maybeboard", "commanders")
 
@@ -430,6 +459,15 @@ class ScryfallService:
         return None
 
     def normalize_deck_build_response(self, raw_text: str, deck_url: str | None = None, fallback_card_by_card: bool = True) -> list[dict[str, Any]]:
+        if deck_url and "moxfield.com" in deck_url.lower():
+            try:
+                payload = self._fetch_moxfield_deck_payload(deck_url)
+                cards = self._deck_cards_from_moxfield_payload(payload)
+                if cards:
+                    return cards
+            except Exception:
+                pass
+
         source_text = raw_text
         if deck_url:
             try:
@@ -451,19 +489,22 @@ class ScryfallService:
             if fallback_text:
                 parsed_entries = self.parse_deck_list(fallback_text)
 
+        name_cache: dict[str, dict[str, Any]] = {}
         for quantity, name, set_code, collector_number in parsed_entries:
-            card = None
-            try:
-                card = self.resolve_deck_entry_card(name, set_code, collector_number)
-            except Exception:
-                card = None
-
-            if not card and (set_code or collector_number) and fallback_card_by_card:
-                clean_name = re.sub(r"\s*#?\d+[a-z]?$", "", name, flags=re.IGNORECASE).strip()
+            card = name_cache.get(name.lower())
+            if card is None:
                 try:
-                    card = self.resolve_deck_entry_card(clean_name or name)
+                    card = self.resolve_deck_entry_card(name, set_code, collector_number)
                 except Exception:
                     card = None
+                if not card and (set_code or collector_number) and fallback_card_by_card:
+                    clean_name = re.sub(r"\s*#?\d+[a-z]?$", "", name, flags=re.IGNORECASE).strip()
+                    try:
+                        card = self.resolve_deck_entry_card(clean_name or name)
+                    except Exception:
+                        card = None
+                if card is not None:
+                    name_cache[name.lower()] = card
 
             if not card:
                 continue
