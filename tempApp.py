@@ -15,7 +15,7 @@ from functools import wraps
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode, urlparse
+from urllib.parse import quote, urlencode, urlparse
 from urllib.request import Request, urlopen
 
 from flask import Flask, Response, abort, flash, jsonify, redirect, render_template, request, send_from_directory, url_for
@@ -29,6 +29,7 @@ ALL_SET_FILES_PATH = Path(__file__).resolve().parent / "working" / "AllSetFiles"
 
 
 SCRYFALL_API_BASE = "https://api.scryfall.com"
+PUBLIC_APP_BASE_URL = os.environ.get("APP_BASE_URL", "https://magic.emmycs.co.uk")
 DEFAULT_CARD_QUERY = "game:paper"
 DEFAULT_SORT_ORDER = "released"
 DEFAULT_SORT_DIRECTION = "desc"
@@ -71,6 +72,9 @@ class ScryfallService:
         self.cache_root = Path(__file__).resolve().parent / "data" / "cache"
         self.cache_root.mkdir(parents=True, exist_ok=True)
         self.cache_path = self.cache_root / "scryfall_cache.json"
+        if self.api_base != SCRYFALL_API_BASE:
+            self._response_cache = {}
+            return
         self._response_cache: dict[str, dict[str, Any]] = self._load_cache()
 
     def _load_cache(self) -> dict[str, dict[str, Any]]:
@@ -149,7 +153,7 @@ class ScryfallService:
         except URLError as error:
             raise RuntimeError(str(error)) from error
 
-    def fetch_deck_export(self, deck_path: str, export_format: str = "text") -> str:
+    def fetch_deck_export(self, deck_path: str, export_format: str = "text", allow_card_by_card_fallback: bool = True) -> str:
         normalized_path = str(deck_path or "").strip().strip("/")
         if not normalized_path:
             raise RuntimeError("Deck path is required.")
@@ -171,15 +175,18 @@ class ScryfallService:
             with urlopen(request, timeout=12) as response:
                 body = response.read()
                 return body.decode("utf-8", errors="replace")
-        except HTTPError as error:
+        except (HTTPError, URLError, RuntimeError) as error:
+            if allow_card_by_card_fallback:
+                fallback_url = f"https://scryfall.com/decks/{normalized_path}"
+                fallback_text = self._fetch_deck_text_card_by_card(fallback_url)
+                if fallback_text:
+                    return fallback_text
             try:
-                payload = error.read().decode("utf-8", errors="replace")
+                payload = error.read().decode("utf-8", errors="replace") if hasattr(error, "read") else ""
                 details = json.loads(payload).get("details") if payload.strip().startswith("{") else payload.strip()
                 raise RuntimeError(details or str(error)) from error
-            except json.JSONDecodeError:
+            except Exception:
                 raise RuntimeError(str(error)) from error
-        except URLError as error:
-            raise RuntimeError(str(error)) from error
 
     def fetch_deck_export_for_url(self, deck_url: str) -> str:
         candidate = (deck_url or "").strip()
@@ -198,7 +205,7 @@ class ScryfallService:
         export_format = "csv" if "export/csv" in lowered or "format=csv" in lowered else "text"
         return self.fetch_deck_export(deck_path, export_format)
 
-    def fetch_deck_text_from_url(self, deck_url: str) -> str:
+    def fetch_deck_text_from_url(self, deck_url: str, allow_card_by_card_fallback: bool = True) -> str:
         candidate = (deck_url or "").strip()
         if not candidate:
             raise RuntimeError("Deck URL is required.")
@@ -239,9 +246,11 @@ class ScryfallService:
                 return self._fetch_uri_text(candidate.rstrip("/") + "?fmt=csv")
 
             return self._fetch_uri_text(candidate)
-        except RuntimeError:
-            raise
-        except Exception as error:  # pragma: no cover - defensive network fallback
+        except Exception as error:
+            if allow_card_by_card_fallback:
+                fallback_text = self._fetch_deck_text_card_by_card(candidate)
+                if fallback_text:
+                    return fallback_text
             raise RuntimeError(f"Unable to load deck from URL: {error}") from error
 
     def _fetch_uri_text(self, url: str) -> str:
@@ -249,6 +258,56 @@ class ScryfallService:
         with urlopen(request, timeout=12) as response:
             body = response.read()
             return body.decode("utf-8", errors="replace")
+
+    def _fetch_deck_text_card_by_card(self, url: str) -> str:
+        try:
+            raw_html = self._fetch_uri_text(url)
+        except Exception:
+            return ""
+
+        return self._fetch_deck_text_card_by_card_text(raw_html)
+
+    def _fetch_deck_text_card_by_card_text(self, raw_html: str) -> str:
+        lines: list[str] = []
+
+        json_card_matches = re.findall(
+            r'\{\s*"quantity"\s*:\s*(\d+)\s*,\s*"name"\s*:\s*"([^"]+)"', raw_html, re.IGNORECASE
+        )
+        if json_card_matches:
+            for qty, name in json_card_matches:
+                lines.append(f"{qty} {name}")
+            if lines:
+                return "\n".join(lines)
+
+        card_link_matches = re.findall(
+            r'href="[^"]*/(?:cards|card)/[^"]*"[^>]*>\s*([^<]+)\s*</a>', raw_html, re.IGNORECASE
+        )
+        if card_link_matches:
+            seen_names: set[str] = set()
+            for card_name in card_link_matches:
+                cleaned = card_name.strip()
+                if cleaned and cleaned.lower() not in {"cards", "card", "scryfall"} and cleaned not in seen_names:
+                    seen_names.add(cleaned)
+                    lines.append(f"1 {cleaned}")
+            if lines:
+                return "\n".join(lines)
+
+        text_matches = re.findall(
+            r'(?:^|>|\b)(\d+)\s*x?\s+([A-Za-z0-9\',\-/\s]{2,50})(?:<|\n|\$|\r)', raw_html
+        )
+        seen_names = set()
+        for qty, name in text_matches:
+            cleaned_name = name.strip()
+            if (
+                cleaned_name
+                and len(cleaned_name) >= 2
+                and cleaned_name.lower() not in {"the", "and", "deck", "mainboard", "sideboard", "cards", "view"}
+                and cleaned_name not in seen_names
+            ):
+                seen_names.add(cleaned_name)
+                lines.append(f"{qty} {cleaned_name}")
+
+        return "\n".join(lines)
 
     def parse_deck_list(self, raw_text: str) -> list[tuple[int, str, str | None, str | None]]:
         parsed: list[tuple[int, str, str | None, str | None]] = []
@@ -269,23 +328,23 @@ class ScryfallService:
             if "//" in remainder:
                 remainder = remainder.split("//", 1)[0].strip()
 
-            collector_match = re.search(r"\((?:[A-Z0-9_]+)\)\s*(\d+)\s*$", remainder)
+            collector_match = re.search(r"(?:\([A-Z0-9_]+\)|\[[A-Z0-9_]+\]|\s)\s*#?(\d+[a-z]?)\s*$", remainder, re.IGNORECASE)
             set_code = None
             collector_number = None
             if collector_match:
                 collector_number = collector_match.group(1)
                 prefix = remainder[: collector_match.start()].strip()
-                set_match = re.search(r"\(([A-Z0-9_]+)\)\s*\d+\s*$", remainder)
+                set_match = re.search(r"\(([A-Z0-9_]+)\)|\[([A-Z0-9_]+)\]", remainder)
                 if set_match:
-                    set_code = set_match.group(1).upper()
+                    set_code = (set_match.group(1) or set_match.group(2)).upper()
                 remainder = prefix
 
-            set_match = re.search(r"\[([A-Z0-9_]+)\]", remainder)
+            set_match = re.search(r"\[([A-Z0-9_]+)\]|\(([A-Z0-9_]+)\)", remainder)
             if set_match:
-                set_code = set_match.group(1).upper()
+                set_code = (set_match.group(1) or set_match.group(2)).upper()
                 remainder = remainder[: set_match.start()] + remainder[set_match.end():]
 
-            remainder = re.sub(r"\s+\([A-Z0-9_]+\)\s*\d+\s*$", "", remainder).strip()
+            remainder = re.sub(r"\s+\([A-Z0-9_]+\)\s*\d+[a-z]?\s*$", "", remainder, flags=re.IGNORECASE).strip()
             name = remainder.strip()
             if not name:
                 continue
@@ -294,43 +353,97 @@ class ScryfallService:
         return parsed
 
     def resolve_deck_entry_card(self, name: str, set_code: str | None = None, collector_number: str | None = None) -> dict[str, Any] | None:
-        query_parts: list[str] = []
         sanitized_name = name.strip()
-        if sanitized_name:
-            query_parts.append(f'name:"{sanitized_name}"')
-        if set_code:
-            query_parts.append(f"set:{set_code.lower()}")
-        if collector_number and set_code:
-            query_parts.append(f"number:{collector_number}")
+        if not sanitized_name:
+            return None
 
-        query = " ".join(query_parts) or 'name:"Card"'
-        results = self.search_cards({"q": query, "unique": "prints", "page": "1"})
-        cards = results.get("data") if isinstance(results, dict) else []
-        for card in cards or []:
-            if isinstance(card, dict) and card.get("name"):
-                return card
-        if sanitized_name and "name:" in query:
+        if set_code or collector_number:
+            query_parts: list[str] = [f'name:"{sanitized_name}"']
+            if set_code:
+                query_parts.append(f"set:{set_code.lower()}")
+            if collector_number:
+                query_parts.append(f"number:{collector_number}")
+            query = " ".join(query_parts)
+            try:
+                results = self.search_cards({"q": query, "unique": "prints", "page": "1"})
+                cards = results.get("data") if isinstance(results, dict) else []
+                for card in cards or []:
+                    if isinstance(card, dict) and card.get("name"):
+                        return card
+            except Exception:
+                pass
+
+            if set_code and collector_number:
+                try:
+                    results = self.search_cards({"q": f'name:"{sanitized_name}" set:{set_code.lower()}', "unique": "prints", "page": "1"})
+                    cards = results.get("data") if isinstance(results, dict) else []
+                    for card in cards or []:
+                        if isinstance(card, dict) and card.get("name"):
+                            return card
+                except Exception:
+                    pass
+
+        try:
             fallback = self.search_cards({"q": f'name:"{sanitized_name}"', "unique": "prints", "page": "1"})
             cards = fallback.get("data") if isinstance(fallback, dict) else []
             for card in cards or []:
                 if isinstance(card, dict) and card.get("name"):
                     return card
+        except Exception:
+            pass
+
+        try:
+            local_cards = self.custom_store.all_cards()
+            for card in local_cards:
+                if isinstance(card, dict) and str(card.get("name", "")).strip().lower() == sanitized_name.lower():
+                    return card
+        except Exception:
+            pass
+
         return None
 
-    def normalize_deck_build_response(self, raw_text: str, deck_url: str | None = None) -> list[dict[str, Any]]:
+    def normalize_deck_build_response(self, raw_text: str, deck_url: str | None = None, fallback_card_by_card: bool = True) -> list[dict[str, Any]]:
         source_text = raw_text
         if deck_url:
-            source_text = self.fetch_deck_text_from_url(deck_url)
+            try:
+                source_text = self.fetch_deck_text_from_url(deck_url, allow_card_by_card_fallback=fallback_card_by_card)
+            except Exception:
+                if fallback_card_by_card:
+                    source_text = self._fetch_deck_text_card_by_card(deck_url)
+                else:
+                    raise
+
         if not source_text:
             return []
 
         cards: list[dict[str, Any]] = []
-        for quantity, name, set_code, collector_number in self.parse_deck_list(source_text):
-            card = self.resolve_deck_entry_card(name, set_code, collector_number)
+        parsed_entries = self.parse_deck_list(source_text)
+
+        if not parsed_entries and fallback_card_by_card:
+            fallback_text = self._fetch_deck_text_card_by_card_text(source_text)
+            if fallback_text:
+                parsed_entries = self.parse_deck_list(fallback_text)
+
+        for quantity, name, set_code, collector_number in parsed_entries:
+            card = None
+            try:
+                card = self.resolve_deck_entry_card(name, set_code, collector_number)
+            except Exception:
+                card = None
+
+            if not card and (set_code or collector_number) and fallback_card_by_card:
+                clean_name = re.sub(r"\s*#?\d+[a-z]?$", "", name, flags=re.IGNORECASE).strip()
+                try:
+                    card = self.resolve_deck_entry_card(clean_name or name)
+                except Exception:
+                    card = None
+
             if not card:
                 continue
+
             for _ in range(quantity):
                 cards.append(card)
+
         return cards
 
     def normalize_search_parameters(self, args: dict[str, str]) -> SearchParameters:
@@ -339,10 +452,10 @@ class ScryfallService:
         order = args.get("order", DEFAULT_SORT_ORDER) or DEFAULT_SORT_ORDER
         direction = args.get("dir", DEFAULT_SORT_DIRECTION) or DEFAULT_SORT_DIRECTION
         unique = args.get("unique", "cards") or "cards"
-        include_extras = args.get("include_extras") == "1"
-        include_multilingual = args.get("include_multilingual") == "1"
-        include_variations = args.get("include_variations") == "1"
-        include_digital = args.get("include_digital") == "1"
+        include_extras = str(args.get("include_extras") or "").lower() in {"1", "true", "yes"}
+        include_multilingual = str(args.get("include_multilingual") or "").lower() in {"1", "true", "yes"}
+        include_variations = str(args.get("include_variations") or "").lower() in {"1", "true", "yes"}
+        include_digital = str(args.get("include_digital") or "").lower() in {"1", "true", "yes"}
         return SearchParameters(
             query=query,
             page=page,
@@ -354,6 +467,18 @@ class ScryfallService:
             include_variations=include_variations,
             include_digital=include_digital,
         )
+
+    def _coerce_search_params(self, params: SearchParameters | dict[str, Any]) -> SearchParameters:
+        if isinstance(params, SearchParameters):
+            return params
+        if isinstance(params, dict):
+            normalized_args: dict[str, str] = {}
+            for key, value in params.items():
+                if value is None:
+                    continue
+                normalized_args[str(key)] = str(value)
+            return self.normalize_search_parameters(normalized_args)
+        raise TypeError("search_cards() requires either a SearchParameters or dict of query arguments.")
 
     def _parse_page_number(self, raw_page: str) -> int:
         try:
@@ -433,9 +558,11 @@ class ScryfallService:
             return False
         return True
 
-    def search_cards(self, params: SearchParameters) -> dict[str, Any]:
-        local_search = self.custom_store.search_cards(params.query, page=params.page, per_page=DEFAULT_RESULTS_PER_PAGE)
-        set_filters = self._extract_set_filters(params.query)
+    def search_cards(self, params: SearchParameters | dict[str, Any]) -> dict[str, Any]:
+        normalized = self._coerce_search_params(params)
+
+        local_search = self.custom_store.search_cards(normalized.query, page=normalized.page, per_page=DEFAULT_RESULTS_PER_PAGE)
+        set_filters = self._extract_set_filters(normalized.query)
         if set_filters and all(self.custom_store.has_set(code) for code in set_filters):
             return {
                 "object": "list",
@@ -446,23 +573,23 @@ class ScryfallService:
             }
 
         query_params = {
-            "q": params.query,
-            "page": params.page,
-            "order": params.order,
-            "dir": params.direction,
-            "unique": params.unique,
-            "include_extras": str(params.include_extras).lower(),
-            "include_multilingual": str(params.include_multilingual).lower(),
-            "include_variations": str(params.include_variations).lower(),
-            "include_digital": str(params.include_digital).lower(),
+            "q": normalized.query,
+            "page": normalized.page,
+            "order": normalized.order,
+            "dir": normalized.direction,
+            "unique": normalized.unique,
+            "include_extras": str(normalized.include_extras).lower(),
+            "include_multilingual": str(normalized.include_multilingual).lower(),
+            "include_variations": str(normalized.include_variations).lower(),
+            "include_digital": str(normalized.include_digital).lower(),
         }
         remote_results = self.request_json("/cards/search", query_params)
         remote_cards = remote_results.get("data", [])
-        filtered_remote_cards = self._filter_name_matches(remote_cards, params.query)
+        filtered_remote_cards = self._filter_name_matches(remote_cards, normalized.query)
         remote_results["data"] = filtered_remote_cards
         remote_results["total_cards"] = len(filtered_remote_cards)
 
-        if params.page != 1 or not local_search.data:
+        if normalized.page != 1 or not local_search.data:
             return remote_results
 
         seen_ids = {str(card.get("id")) for card in filtered_remote_cards if card.get("id")}
@@ -527,7 +654,16 @@ class ScryfallService:
         local_card = self.custom_store.get_card_by_id(card_id)
         if local_card:
             return local_card
-        return self.request_json(f"/cards/{card_id}")
+
+        cache_key = f"/cards/{card_id}"
+        cached = self._read_cache(cache_key)
+        if cached is not None:
+            return cached
+
+        payload = self.request_json(f"/cards/{card_id}")
+        if isinstance(payload, dict):
+            self._write_cache(cache_key, payload)
+        return payload
 
     def get_card_by_set_number(self, set_code: str, collector_number: str) -> dict[str, Any]:
         local_card = self.custom_store.get_card_by_set_number(set_code, collector_number)
@@ -745,8 +881,7 @@ def create_temp_app() -> Flask:
         if image_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/", "/")):
             return image_url
         if image_url.startswith(("http://", "https://")):
-            local_name = card_image_cache_name(card, image_key, image_url)
-            return cache_remote_image(image_url, local_name)
+            return f"{PUBLIC_APP_BASE_URL.rstrip('/')}/api/proxy-image?url={quote(image_url, safe='')}"
         return image_url
 
     def proxy_image_uris_for_card(card: dict[str, Any]) -> dict[str, Any]:
@@ -1437,13 +1572,15 @@ def create_temp_app() -> Flask:
             abort(400)
         if not remote_url.startswith(("http://", "https://")):
             abort(400)
+        if remote_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/")):
+            return redirect(remote_url, code=302)
         if not remote_url.startswith(("https://cards.scryfall.io/", "https://api.scryfall.com/", "https://static.scryfall.io/")):
             abort(403)
 
         cached_url = cache_remote_image(remote_url)
-        if not cached_url or cached_url.startswith(("http://", "https://")) and cached_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/")):
-            abort(502)
-        return redirect(cached_url, code=302)
+        if cached_url:
+            return redirect(cached_url, code=302)
+        return redirect(remote_url, code=302)
 
     @app.get("/api/search")
     def api_search() -> Any:
@@ -1515,7 +1652,10 @@ def create_temp_app() -> Flask:
             payload = request.get_json(silent=True) or {}
             deck_data = payload.get("data") or ""
             deck_url = payload.get("url") or ""
-            cards = service.normalize_deck_build_response(deck_data, deck_url=deck_url)
+            fallback_card_by_card = payload.get("fallback_card_by_card", True)
+            cards = service.normalize_deck_build_response(
+                deck_data, deck_url=deck_url, fallback_card_by_card=fallback_card_by_card
+            )
             if not cards:
                 return jsonify({"error": "No cards found in the supplied deck."}), 422
 
