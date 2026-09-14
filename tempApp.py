@@ -580,15 +580,24 @@ class ScryfallService:
             query_parts.append(f"number:{collector_number}")
 
         query = " ".join(query_parts) or 'name:"Card"'
+
+        def extract_cards(results: Any) -> list[dict[str, Any]]:
+            if isinstance(results, dict):
+                if results.get("object") == "card" and isinstance(results, dict):
+                    return [results] if results.get("name") else []
+                return [card for card in results.get("data", []) if isinstance(card, dict)]
+            if isinstance(results, list):
+                return [card for card in results if isinstance(card, dict)]
+            return []
+
         results = self.search_cards({"q": query, "unique": "prints", "page": "1"})
-        cards = results.get("data") if isinstance(results, dict) else []
-        for card in cards or []:
+        for card in extract_cards(results):
             if isinstance(card, dict) and card.get("name"):
                 return card
+
         if sanitized_name and "name:" in query:
             fallback = self.search_cards({"q": f'name:"{sanitized_name}"', "unique": "prints", "page": "1"})
-            cards = fallback.get("data") if isinstance(fallback, dict) else []
-            for card in cards or []:
+            for card in extract_cards(fallback):
                 if isinstance(card, dict) and card.get("name"):
                     return card
         return None
@@ -817,6 +826,10 @@ class ScryfallService:
         remote_results = self.request_json("/cards/search", query_params)
         remote_cards = remote_results.get("data", [])
         filtered_remote_cards = self._filter_name_matches(remote_cards, params.query)
+        if params.query.strip().lower().startswith("name:") and filtered_remote_cards:
+            best_match = filtered_remote_cards[0]
+            return {**best_match, "object": "card"}
+
         remote_results["data"] = filtered_remote_cards
         remote_results["total_cards"] = len(filtered_remote_cards)
 
@@ -844,32 +857,45 @@ class ScryfallService:
             return cards
 
         normalized_query = re.sub(r"\s+", " ", cleaned).strip().lower()
-        if normalized_query.startswith("name:"):
+        is_exact_name_query = normalized_query.startswith("name:")
+        if is_exact_name_query:
             normalized_query = re.sub(r"^name:\s*", "", normalized_query).strip()
         elif ":" in normalized_query:
             field_prefix = normalized_query.split(":", 1)[0]
             if field_prefix in {"name", "oracle", "type", "text", "set", "rarity", "color", "mana", "power", "toughness", "game"}:
                 normalized_query = normalized_query.split(":", 1)[1].strip()
+            else:
+                return cards
 
         normalized_query = normalized_query.strip().strip('"').strip()
         if not normalized_query:
             return cards
 
-        exact_matches: list[dict[str, Any]] = []
+        if not is_exact_name_query:
+            return cards
+
+        ranked_matches: list[tuple[int, int, str, dict[str, Any]]] = []
         for card in cards:
             if not isinstance(card, dict):
                 continue
             name = str(card.get("name") or "").strip().lower()
+            if not name:
+                continue
             if name == normalized_query:
-                exact_matches.append(card)
+                score = 1000
+            elif name.startswith(normalized_query):
+                score = 500
+            elif normalized_query in name:
+                score = 200
+            else:
+                continue
+            ranked_matches.append((score, len(name), name, card))
 
-        if len(exact_matches) == 1:
-            return exact_matches
+        if not ranked_matches:
+            return cards
 
-        # Preserve the full Scryfall result set for name searches and partial searches.
-        # Returning only a single "best" guess breaks the importer contract for
-        # commands that rely on a list of card candidates (for example, name:Forest).
-        return cards
+        ranked_matches.sort(key=lambda item: (-item[0], item[1], item[2]))
+        return [ranked_matches[0][3]]
 
     def get_card_by_id(self, card_id: str) -> dict[str, Any]:
         cache_key = f"id:{card_id}"
