@@ -556,7 +556,29 @@ class ScryfallService:
             return False
         return True
 
-    def search_cards(self, params: SearchParameters) -> dict[str, Any]:
+    def search_cards(self, params: SearchParameters | dict[str, Any]) -> dict[str, Any]:
+        if isinstance(params, dict):
+            query = str(params.get("q") or params.get("query") or "").strip()
+            page = int(params.get("page") or params.get("page_number") or "1")
+            order = str(params.get("order") or DEFAULT_SORT_ORDER).strip() or DEFAULT_SORT_ORDER
+            direction = str(params.get("dir") or params.get("direction") or DEFAULT_SORT_DIRECTION).strip() or DEFAULT_SORT_DIRECTION
+            unique = str(params.get("unique") or "cards").strip() or "cards"
+            include_extras = bool(params.get("include_extras") == "1" or params.get("include_extras") is True)
+            include_multilingual = bool(params.get("include_multilingual") == "1" or params.get("include_multilingual") is True)
+            include_variations = bool(params.get("include_variations") == "1" or params.get("include_variations") is True)
+            include_digital = bool(params.get("include_digital") == "1" or params.get("include_digital") is True)
+            params = SearchParameters(
+                query=query,
+                page=max(page, 1),
+                order=order,
+                direction=direction,
+                unique=unique,
+                include_extras=include_extras,
+                include_multilingual=include_multilingual,
+                include_variations=include_variations,
+                include_digital=include_digital,
+            )
+
         local_search = self.custom_store.search_cards(params.query, page=params.page, per_page=DEFAULT_RESULTS_PER_PAGE)
         set_filters = self._extract_set_filters(params.query)
         if set_filters and all(self.custom_store.has_set(code) for code in set_filters):
