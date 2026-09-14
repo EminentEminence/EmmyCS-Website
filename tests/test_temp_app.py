@@ -131,6 +131,30 @@ def test_tts_native_card_object_uses_cached_local_images():
     assert "cards.scryfall.io" not in face_url
 
 
+def test_tts_native_card_object_uses_mtg_back_for_card_backside():
+    card = {
+        "name": "Lightning Bolt",
+        "image_uris": {"normal": "https://cards.scryfall.io/normal/front/lightning-bolt.jpg"},
+    }
+    obj = tempApp.tts_native_card_object(card, 1)
+
+    assert obj["CustomDeck"]["1"]["FaceURL"] != tempApp.CARD_BACK_IMAGE_URL
+    assert obj["CustomDeck"]["1"]["BackURL"] == tempApp.CARD_BACK_IMAGE_URL
+
+    dfc = {
+        "name": "Liliana, Heretical Healer",
+        "card_faces": [
+            {"name": "Liliana, Heretical Healer", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/liliana-front.jpg"}},
+            {"name": "Liliana, Defiant Necromancer", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/liliana-back.jpg"}},
+        ],
+    }
+    dfc_obj = tempApp.tts_native_card_object(dfc, 1)
+
+    assert dfc_obj["CustomDeck"]["1"]["BackURL"] == tempApp.CARD_BACK_IMAGE_URL
+    assert dfc_obj["States"][2]["CustomDeck"]["1"]["FaceURL"] != tempApp.CARD_BACK_IMAGE_URL
+    assert dfc_obj["States"][2]["CustomDeck"]["1"]["BackURL"] == tempApp.CARD_BACK_IMAGE_URL
+
+
 def test_deck_import_url_falls_back_to_card_by_card(monkeypatch):
     service = ScryfallService(api_base="https://example.invalid")
 

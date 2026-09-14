@@ -38,17 +38,79 @@ DEFAULT_SORT_DIRECTION = "desc"
 DEFAULT_RESULTS_PER_PAGE = 12
 CUSTOM_SETS_STORAGE_ENV = "CUSTOM_SETS_STORAGE_DIR"
 SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "https://magic.emmycs.co.uk").rstrip("/")
+CARD_BACK_IMAGE_URL = "https://i.stack.imgur.com/787gj.png"
 CARD_PLACEHOLDER_IMAGE_URL = f"{SITE_BASE_URL}/static/images/overlay.png"
+
+
+def card_image_cache_name(card: dict[str, Any] | None, image_key: str, image_url: str | None) -> str:
+    card_id = str((card or {}).get("id") or (card or {}).get("oracle_id") or (card or {}).get("scryfall_id") or "card").strip()
+    safe_card_id = re.sub(r"[^A-Za-z0-9._-]+", "_", card_id) or "card"
+    safe_key = re.sub(r"[^A-Za-z0-9._-]+", "_", str(image_key or "image")).strip("._-") or "image"
+    parsed = urlparse(str(image_url or ""))
+    suffix = Path(parsed.path).suffix.lower() or ".jpg"
+    if suffix not in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}:
+        suffix = ".jpg"
+    return f"{safe_card_id}-{safe_key}{suffix}"
+
+
+def cache_remote_image(remote_url: str, cache_key: str | None = None) -> str | None:
+    if not remote_url:
+        return None
+    remote_url = str(remote_url).strip()
+    if not remote_url.startswith(("http://", "https://")):
+        return remote_url
+    if not remote_url.startswith(("https://cards.scryfall.io/", "https://api.scryfall.com/", "https://static.scryfall.io/")):
+        return remote_url
+
+    image_cache_root = Path(__file__).resolve().parent / "data" / "cache" / "images"
+    image_cache_root.mkdir(parents=True, exist_ok=True)
+    cache_name = cache_key or hashlib.sha256(remote_url.encode("utf-8")).hexdigest() + (Path(urlparse(remote_url).path).suffix.lower() or ".jpg")
+    cache_path = image_cache_root / cache_name
+    if not cache_path.exists():
+        try:
+            with urlopen(Request(remote_url, headers={"User-Agent": "Mozilla/5.0"}), timeout=25) as response:
+                data = response.read()
+                if not data:
+                    return None
+                cache_path.write_bytes(data)
+        except Exception:
+            return None
+
+    try:
+        return url_for("api_cached_image", image_key=cache_name, _external=True)
+    except RuntimeError:
+        return f"/api/images/{cache_name}"
 
 
 def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict[str, Any]:
     fallback_image = CARD_PLACEHOLDER_IMAGE_URL
+    card_back_image = CARD_BACK_IMAGE_URL
+
+    def resolve_face(candidate: str | None, image_key: str) -> str | None:
+        if not candidate:
+            return None
+        candidate = str(candidate).strip()
+        if not candidate:
+            return None
+
+        cached = cache_remote_image(candidate, card_image_cache_name(card, image_key, candidate))
+        if cached and ("/api/images/" in cached or "/static/images/" in cached):
+            return cached
+        if cached and cached.startswith(("http://", "https://")):
+            if "cards.scryfall.io" in cached or "api.scryfall.com" in cached or "static.scryfall.io" in cached:
+                return fallback_image
+            return cached
+        if candidate.startswith(("http://", "https://")):
+            if "cards.scryfall.io" in candidate or "api.scryfall.com" in candidate or "static.scryfall.io" in candidate:
+                return fallback_image
+            return candidate
+        return candidate
 
     if not isinstance(card, dict):
-        return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": fallback_image, "BackURL": fallback_image, "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
+        return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": fallback_image, "BackURL": card_back_image, "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
 
     face_url = None
-    back_url = None
+    back_face_url = None
     name = str(card.get("name") or "Card").strip() or "Card"
     description = str(card.get("oracle_text") or card.get("text") or "").strip()
     oracle_id = str(card.get("oracle_id") or card.get("id") or "").strip()
@@ -66,21 +128,13 @@ def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict
 
         if len(card_faces) > 1:
             back_face = card_faces[1] if isinstance(card_faces[1], dict) else {}
-            back_image = back_face.get("image_uris") if isinstance(back_face.get("image_uris"), dict) else {}
+            back_image = back_face.get("image_uris") if isinstance(back_image := back_face.get("image_uris"), dict) else {}
             if back_image:
-                back_url = back_image.get("normal") or back_image.get("large") or back_image.get("png") or back_image.get("small") or back_url
+                back_face_url = back_image.get("normal") or back_image.get("large") or back_image.get("png") or back_image.get("small") or back_face_url
 
-    if face_url and ("cards.scryfall.io" in str(face_url) or "api.scryfall.com" in str(face_url) or "static.scryfall.io" in str(face_url)):
-        face_url = fallback_image
-    if back_url and ("cards.scryfall.io" in str(back_url) or "api.scryfall.com" in str(back_url) or "static.scryfall.io" in str(back_url)):
-        back_url = fallback_image
-
-    if not face_url and not back_url:
-        face_url = back_url = fallback_image
-    elif not back_url and face_url:
-        back_url = face_url
-    elif not face_url and back_url:
-        face_url = back_url
+    face_url = resolve_face(face_url, f"tts-front-{card_id_index}") or fallback_image
+    if card_faces and len(card_faces) > 1:
+        back_face_url = resolve_face(back_face_url, f"tts-back-{card_id_index}") or fallback_image
 
     card_obj = {
         "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
@@ -91,8 +145,8 @@ def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict
         "CardID": card_id_index * 100,
         "CustomDeck": {
             str(card_id_index): {
-                "FaceURL": face_url or back_url or fallback_image,
-                "BackURL": back_url or face_url or fallback_image,
+                "FaceURL": face_url,
+                "BackURL": card_back_image,
                 "NumWidth": 1,
                 "NumHeight": 1,
                 "Type": 0,
@@ -104,19 +158,17 @@ def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict
 
     if card_faces and len(card_faces) > 1:
         back_name = str((card_faces[1] or {}).get("name") or name).strip() or name
-        secondary_back = back_url or face_url or fallback_image
-        secondary_face = face_url or back_url or fallback_image
         back_obj = {
             "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
             "Name": "Card",
             "Nickname": back_name,
             "Description": str((card_faces[1] or {}).get("oracle_text") or description or "").strip(),
             "Memo": oracle_id,
-            "CardID": card_id_index * 100 + 1,
+            "CardID": card_id_index * 100,
             "CustomDeck": {
-                str(card_id_index + 1): {
-                    "FaceURL": secondary_face,
-                    "BackURL": secondary_back,
+                str(card_id_index): {
+                    "FaceURL": back_face_url or fallback_image,
+                    "BackURL": card_back_image,
                     "NumWidth": 1,
                     "NumHeight": 1,
                     "Type": 0,
@@ -1687,100 +1739,7 @@ def create_temp_app() -> Flask:
         return payload
 
     def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict[str, Any]:
-        fallback_image = CARD_PLACEHOLDER_IMAGE_URL
-
-        if not isinstance(card, dict):
-            return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": fallback_image, "BackURL": fallback_image, "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
-
-        face_url = None
-        back_url = None
-        name = str(card.get("name") or "Card").strip() or "Card"
-        description = str(card.get("oracle_text") or card.get("text") or "").strip()
-        oracle_id = str(card.get("oracle_id") or card.get("id") or "").strip()
-
-        image_uris = card.get("image_uris") if isinstance(card.get("image_uris"), dict) else {}
-        if image_uris:
-            face_url = image_uris.get("normal") or image_uris.get("large") or image_uris.get("png") or image_uris.get("small")
-
-        card_faces = card.get("card_faces") if isinstance(card.get("card_faces"), list) else []
-        if card_faces:
-            front_face = card_faces[0] if isinstance(card_faces[0], dict) else {}
-            front_image = front_face.get("image_uris") if isinstance(front_face.get("image_uris"), dict) else {}
-            if front_image:
-                face_url = front_image.get("normal") or front_image.get("large") or front_image.get("png") or front_image.get("small") or face_url
-
-            if len(card_faces) > 1:
-                back_face = card_faces[1] if isinstance(card_faces[1], dict) else {}
-                back_image = back_face.get("image_uris") if isinstance(back_face.get("image_uris"), dict) else {}
-                if back_image:
-                    back_url = back_image.get("normal") or back_image.get("large") or back_image.get("png") or back_image.get("small") or back_url
-
-        if face_url:
-            cached_face = cache_remote_image(str(face_url), card_image_cache_name(card, f"tts-front-{card_id_index}", str(face_url)))
-            if cached_face and ("/api/images/" in cached_face or "/static/images/" in cached_face):
-                face_url = cached_face
-            else:
-                face_url = fallback_image
-        if back_url:
-            cached_back = cache_remote_image(str(back_url), card_image_cache_name(card, f"tts-back-{card_id_index}", str(back_url)))
-            if cached_back and ("/api/images/" in cached_back or "/static/images/" in cached_back):
-                back_url = cached_back
-            else:
-                back_url = fallback_image
-
-        if not face_url and not back_url:
-            face_url = back_url = fallback_image
-        elif not back_url and face_url:
-            back_url = face_url
-        elif not face_url and back_url:
-            face_url = back_url
-
-        card_obj = {
-            "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
-            "Name": "Card",
-            "Nickname": name,
-            "Description": description,
-            "Memo": oracle_id,
-            "CardID": card_id_index * 100,
-            "CustomDeck": {
-                str(card_id_index): {
-                    "FaceURL": face_url or back_url or fallback_image,
-                    "BackURL": back_url or face_url or fallback_image,
-                    "NumWidth": 1,
-                    "NumHeight": 1,
-                    "Type": 0,
-                    "BackIsHidden": True,
-                    "UniqueBack": False,
-                }
-            },
-        }
-
-        if card_faces and len(card_faces) > 1:
-            back_name = str((card_faces[1] or {}).get("name") or name).strip() or name
-            secondary_back = back_url or face_url or fallback_image
-            secondary_face = face_url or back_url or fallback_image
-            back_obj = {
-                "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
-                "Name": "Card",
-                "Nickname": back_name,
-                "Description": str((card_faces[1] or {}).get("oracle_text") or description or "").strip(),
-                "Memo": oracle_id,
-                "CardID": card_id_index * 100 + 1,
-                "CustomDeck": {
-                    str(card_id_index + 1): {
-                        "FaceURL": secondary_face,
-                        "BackURL": secondary_back,
-                        "NumWidth": 1,
-                        "NumHeight": 1,
-                        "Type": 0,
-                        "BackIsHidden": True,
-                        "UniqueBack": False,
-                    }
-                },
-            }
-            card_obj["States"] = {2: back_obj}
-
-        return card_obj
+        return globals()["tts_native_card_object"](card, card_id_index)
 
     @app.get("/api/images/<path:image_key>")
     def api_cached_image(image_key: str) -> Any:
