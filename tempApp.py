@@ -232,14 +232,32 @@ class ScryfallService:
                     continue
                 quantity = max(int(entry.get("quantity") or 1), 1)
                 card = entry.get("card") if isinstance(entry.get("card"), dict) else {}
-                if not isinstance(card, dict) or not str(card.get("name") or entry_name or "").strip():
+                if not isinstance(card, dict):
                     continue
-                normalized_card = dict(card)
-                normalized_card.setdefault("object", "card")
-                normalized_card.setdefault("name", str(entry_name).strip())
-                normalized_card.setdefault("id", str(card.get("scryfall_id") or card.get("id") or entry_name).strip())
+                card_name = str(card.get("name") or entry_name or "").strip()
+                if not card_name:
+                    continue
+
+                resolved_card = dict(card)
+                resolved_card.setdefault("object", "card")
+                resolved_card.setdefault("name", card_name)
+                candidate_id = str(card.get("scryfall_id") or card.get("id") or "").strip()
+                if not resolved_card.get("image_uris") and candidate_id:
+                    try:
+                        card_lookup = self.get_card_by_id(candidate_id)
+                        if isinstance(card_lookup, dict):
+                            resolved_card = {**card_lookup, **resolved_card}
+                    except Exception:
+                        pass
+                if not resolved_card.get("image_uris"):
+                    try:
+                        card_lookup = self.resolve_deck_entry_card(card_name)
+                        if isinstance(card_lookup, dict):
+                            resolved_card = {**card_lookup, **resolved_card}
+                    except Exception:
+                        pass
                 for _ in range(quantity):
-                    cards.append(normalized_card)
+                    cards.append(resolved_card)
         return cards
 
     def fetch_deck_text_from_url(self, deck_url: str) -> str:
@@ -371,7 +389,19 @@ class ScryfallService:
                 payload = self._fetch_moxfield_deck_payload(deck_url)
                 cards = self._deck_cards_from_moxfield_payload(payload)
                 if cards:
-                    return cards
+                    normalized_cards: list[dict[str, Any]] = []
+                    for card in cards:
+                        if not isinstance(card, dict):
+                            continue
+                        if not card.get("image_uris") and card.get("name"):
+                            try:
+                                resolved = self.resolve_deck_entry_card(str(card.get("name")))
+                                if isinstance(resolved, dict):
+                                    card = {**resolved, **card}
+                            except Exception:
+                                pass
+                        normalized_cards.append(card)
+                    return normalized_cards
             except Exception:
                 pass
 
