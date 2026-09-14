@@ -40,17 +40,51 @@ CUSTOM_SETS_STORAGE_ENV = "CUSTOM_SETS_STORAGE_DIR"
 SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "https://magic.emmycs.co.uk").rstrip("/")
 CARD_BACK_IMAGE_URL = "https://i.stack.imgur.com/787gj.png"
 CARD_PLACEHOLDER_IMAGE_URL = f"{SITE_BASE_URL}/static/images/overlay.png"
+REMOTE_IMAGE_SOURCE_MAP: dict[str, str] = {}
 
 
 def card_image_cache_name(card: dict[str, Any] | None, image_key: str, image_url: str | None) -> str:
-    card_id = str((card or {}).get("id") or (card or {}).get("oracle_id") or (card or {}).get("scryfall_id") or "card").strip()
-    safe_card_id = re.sub(r"[^A-Za-z0-9._-]+", "_", card_id) or "card"
+    card_fields = [
+        (card or {}).get("id"),
+        (card or {}).get("oracle_id"),
+        (card or {}).get("scryfall_id"),
+        (card or {}).get("set"),
+        (card or {}).get("collector_number"),
+        (card or {}).get("name"),
+    ]
+    card_identity = next((str(value).strip() for value in card_fields if str(value or "").strip()), "card")
+    safe_card_id = re.sub(r"[^A-Za-z0-9._-]+", "_", card_identity) or "card"
     safe_key = re.sub(r"[^A-Za-z0-9._-]+", "_", str(image_key or "image")).strip("._-") or "image"
     parsed = urlparse(str(image_url or ""))
     suffix = Path(parsed.path).suffix.lower() or ".jpg"
     if suffix not in {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp"}:
         suffix = ".jpg"
     return f"{safe_card_id}-{safe_key}{suffix}"
+
+
+def proxy_remote_card_images(card: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(card, dict):
+        return card
+
+    image_uris = card.get("image_uris")
+    if isinstance(image_uris, dict):
+        for key, value in list(image_uris.items()):
+            if not value:
+                continue
+            image_uris[key] = cache_remote_image(str(value), card_image_cache_name(card, str(key), str(value))) or str(value)
+
+    for face_index, face in enumerate(card.get("card_faces", []) or []):
+        if not isinstance(face, dict):
+            continue
+        face_uris = face.get("image_uris")
+        if not isinstance(face_uris, dict):
+            continue
+        for key, value in list(face_uris.items()):
+            if not value:
+                continue
+            face_uris[key] = cache_remote_image(str(value), card_image_cache_name(card, f"face-{face_index}-{key}", str(value))) or str(value)
+
+    return card
 
 
 def cache_remote_image(remote_url: str, cache_key: str | None = None) -> str | None:
@@ -65,16 +99,17 @@ def cache_remote_image(remote_url: str, cache_key: str | None = None) -> str | N
     image_cache_root = Path(__file__).resolve().parent / "data" / "cache" / "images"
     image_cache_root.mkdir(parents=True, exist_ok=True)
     cache_name = cache_key or hashlib.sha256(remote_url.encode("utf-8")).hexdigest() + (Path(urlparse(remote_url).path).suffix.lower() or ".jpg")
+    REMOTE_IMAGE_SOURCE_MAP[cache_name] = remote_url
     cache_path = image_cache_root / cache_name
     if not cache_path.exists():
         try:
             with urlopen(Request(remote_url, headers={"User-Agent": "Mozilla/5.0"}), timeout=25) as response:
                 data = response.read()
                 if not data:
-                    return None
+                    return f"/api/images/{cache_name}"
                 cache_path.write_bytes(data)
         except Exception:
-            return None
+            return f"/api/images/{cache_name}"
 
     try:
         return url_for("api_cached_image", image_key=cache_name, _external=True)
@@ -826,8 +861,13 @@ class ScryfallService:
         remote_results = self.request_json("/cards/search", query_params)
         remote_cards = remote_results.get("data", [])
         filtered_remote_cards = self._filter_name_matches(remote_cards, params.query)
+        for card in filtered_remote_cards:
+            if isinstance(card, dict):
+                proxy_remote_card_images(card)
+
         if params.query.strip().lower().startswith("name:") and filtered_remote_cards:
-            best_match = filtered_remote_cards[0]
+            best_match = dict(filtered_remote_cards[0])
+            proxy_remote_card_images(best_match)
             return {**best_match, "object": "card"}
 
         remote_results["data"] = filtered_remote_cards
@@ -871,6 +911,18 @@ class ScryfallService:
         if not normalized_query:
             return cards
 
+        exact_matches: list[dict[str, Any]] = []
+        for card in cards:
+            if not isinstance(card, dict):
+                continue
+            name = str(card.get("name") or "").strip().lower()
+            if name == normalized_query:
+                exact_matches.append(card)
+
+        if exact_matches:
+            exact_matches.sort(key=lambda item: (str(item.get("set") or ""), str(item.get("collector_number") or ""), str(item.get("name") or "")))
+            return [exact_matches[0]]
+
         if not is_exact_name_query:
             return cards
 
@@ -881,9 +933,7 @@ class ScryfallService:
             name = str(card.get("name") or "").strip().lower()
             if not name:
                 continue
-            if name == normalized_query:
-                score = 1000
-            elif name.startswith(normalized_query):
+            if name.startswith(normalized_query):
                 score = 500
             elif normalized_query in name:
                 score = 200
@@ -1108,17 +1158,22 @@ def create_temp_app() -> Flask:
             return remote_url
 
         cache_name = cache_key or normalized_remote_image_key(remote_url)
+        REMOTE_IMAGE_SOURCE_MAP[cache_name] = remote_url
         cache_path = image_cache_root / cache_name
         if not cache_path.exists():
             try:
                 with urlopen(Request(remote_url, headers={"User-Agent": "Mozilla/5.0"}), timeout=25) as response:
                     data = response.read()
                     if not data:
-                        return None
+                        return f"{url_for('api_cached_image', image_key=cache_name, _external=True)}"
                     cache_path.write_bytes(data)
             except Exception:
-                return None
-        return url_for("api_cached_image", image_key=cache_name, _external=True)
+                return f"{url_for('api_cached_image', image_key=cache_name, _external=True)}"
+
+        try:
+            return url_for("api_cached_image", image_key=cache_name, _external=True)
+        except RuntimeError:
+            return f"/api/images/{cache_name}"
 
     def card_image_cache_name(card: dict[str, Any] | None, image_key: str, image_url: str | None) -> str:
         card_id = str((card or {}).get("id") or (card or {}).get("oracle_id") or (card or {}).get("scryfall_id") or "card").strip()
@@ -1138,8 +1193,11 @@ def create_temp_app() -> Flask:
             return None
         if image_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/", "/")):
             return image_url
+
         if image_url.startswith(("http://", "https://")):
-            return f"{SITE_BASE_URL}/api/proxy-image?url={quote(image_url, safe='')}"
+            cache_key = card_image_cache_name(card, image_key, image_url)
+            cached = cache_remote_image(image_url, cache_key=cache_key)
+            return cached or image_url
         return image_url
 
     def proxy_image_uris_for_card(card: dict[str, Any]) -> dict[str, Any]:
@@ -1170,13 +1228,13 @@ def create_temp_app() -> Flask:
         if card.get("image_uris"):
             image_uris = card.get("image_uris", {})
             candidate = image_uris.get("normal") or image_uris.get("large") or image_uris.get("png")
-            return proxied_image_url(candidate) or candidate
+            return proxied_image_url(candidate, card=card, image_key="preview") or candidate
 
         for face in card.get("card_faces", []) or []:
             if face.get("image_uris"):
                 image_uris = face.get("image_uris", {})
                 candidate = image_uris.get("normal") or image_uris.get("large") or image_uris.get("png")
-                return proxied_image_url(candidate) or candidate
+                return proxied_image_url(candidate, card=card, image_key="preview-face") or candidate
         return None
 
     def card_gallery_images(card: dict[str, Any]) -> list[dict[str, str]]:
@@ -1184,13 +1242,13 @@ def create_temp_app() -> Flask:
         if card.get("image_uris"):
             image_uris = card.get("image_uris", {})
             candidate = image_uris.get("png") or image_uris.get("large") or image_uris.get("normal") or ""
-            gallery.append({"label": "Front", "image": proxied_image_url(candidate) or candidate})
+            gallery.append({"label": "Front", "image": proxied_image_url(candidate, card=card, image_key="gallery-front") or candidate})
             return gallery
 
         for index, face in enumerate(card.get("card_faces", []) or []):
             image_uris = face.get("image_uris", {})
             candidate = image_uris.get("png") or image_uris.get("large") or image_uris.get("normal") or ""
-            gallery.append({"label": face.get("name") or f"Face {index + 1}", "image": proxied_image_url(candidate) or candidate})
+            gallery.append({"label": face.get("name") or f"Face {index + 1}", "image": proxied_image_url(candidate, card=card, image_key=f"gallery-face-{index}") or candidate})
         return [item for item in gallery if item["image"]]
 
     def normalize_card_for_display(card: dict[str, Any] | None) -> dict[str, Any] | None:
@@ -1822,7 +1880,18 @@ def create_temp_app() -> Flask:
 
         cache_path = image_cache_root / safe_key
         if not cache_path.exists() or not cache_path.is_file():
-            abort(404)
+            source_url = (request.args.get("source") or REMOTE_IMAGE_SOURCE_MAP.get(safe_key) or "").strip()
+            if not source_url.startswith(("http://", "https://")):
+                abort(404)
+            try:
+                with urlopen(Request(source_url, headers={"User-Agent": "Mozilla/5.0"}), timeout=25) as response:
+                    data = response.read()
+                    if not data:
+                        abort(502)
+                    cache_path.parent.mkdir(parents=True, exist_ok=True)
+                    cache_path.write_bytes(data)
+            except Exception:
+                abort(502)
 
         return send_from_directory(image_cache_root, safe_key, as_attachment=False)
 

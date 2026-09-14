@@ -50,7 +50,8 @@ def test_search_results_proxy_remote_images(monkeypatch):
 
     assert response.status_code == 200
     payload = response.get_json()
-    assert payload["data"][0]["image_uris"]["normal"].startswith("https://magic.emmycs.co.uk/api/proxy-image?url=")
+    assert "/api/images/" in payload["data"][0]["image_uris"]["normal"]
+    assert "proxy-image?url=" not in payload["data"][0]["image_uris"]["normal"]
 
 
 def test_search_cards_returns_single_card_for_exact_name_queries():
@@ -62,8 +63,8 @@ def test_search_cards_returns_single_card_for_exact_name_queries():
         "has_more": False,
         "next_page": None,
         "data": [
-            {"object": "card", "id": "a", "name": "Forest"},
-            {"object": "card", "id": "b", "name": "Forest"},
+            {"object": "card", "id": "b", "name": "Forest", "set": "m15", "collector_number": "2", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/forest-b.jpg"}},
+            {"object": "card", "id": "a", "name": "Forest", "set": "m10", "collector_number": "1", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/forest-a.jpg"}},
         ],
     }
 
@@ -71,6 +72,9 @@ def test_search_cards_returns_single_card_for_exact_name_queries():
 
     assert result["object"] == "card"
     assert result["name"] == "Forest"
+    assert result["id"] == "a"
+    assert "/api/images/" in result["image_uris"]["normal"]
+    assert "proxy-image?url=" not in result["image_uris"]["normal"]
 
 
 def test_search_cards_preserves_full_scryfall_result_set_for_partial_queries():
