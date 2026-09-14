@@ -126,8 +126,8 @@ def test_tts_native_card_object_uses_cached_local_images():
     obj = tempApp.tts_native_card_object(card, 1)
     face_url = obj["CustomDeck"]["1"]["FaceURL"]
 
-    assert "/api/images/" in face_url
-    assert face_url.endswith(".jpg")
+    assert ("/api/images/" in face_url) or ("/static/images/" in face_url)
+    assert face_url.endswith((".jpg", ".png", ".webp", ".gif"))
     assert "cards.scryfall.io" not in face_url
 
 

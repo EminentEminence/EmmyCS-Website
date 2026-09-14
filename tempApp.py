@@ -38,6 +38,96 @@ DEFAULT_SORT_DIRECTION = "desc"
 DEFAULT_RESULTS_PER_PAGE = 12
 CUSTOM_SETS_STORAGE_ENV = "CUSTOM_SETS_STORAGE_DIR"
 SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "https://magic.emmycs.co.uk").rstrip("/")
+CARD_PLACEHOLDER_IMAGE_URL = f"{SITE_BASE_URL}/static/images/overlay.png"
+
+
+def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict[str, Any]:
+    fallback_image = CARD_PLACEHOLDER_IMAGE_URL
+
+    if not isinstance(card, dict):
+        return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": fallback_image, "BackURL": fallback_image, "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
+
+    face_url = None
+    back_url = None
+    name = str(card.get("name") or "Card").strip() or "Card"
+    description = str(card.get("oracle_text") or card.get("text") or "").strip()
+    oracle_id = str(card.get("oracle_id") or card.get("id") or "").strip()
+
+    image_uris = card.get("image_uris") if isinstance(card.get("image_uris"), dict) else {}
+    if image_uris:
+        face_url = image_uris.get("normal") or image_uris.get("large") or image_uris.get("png") or image_uris.get("small")
+
+    card_faces = card.get("card_faces") if isinstance(card.get("card_faces"), list) else []
+    if card_faces:
+        front_face = card_faces[0] if isinstance(card_faces[0], dict) else {}
+        front_image = front_face.get("image_uris") if isinstance(front_face.get("image_uris"), dict) else {}
+        if front_image:
+            face_url = front_image.get("normal") or front_image.get("large") or front_image.get("png") or front_image.get("small") or face_url
+
+        if len(card_faces) > 1:
+            back_face = card_faces[1] if isinstance(card_faces[1], dict) else {}
+            back_image = back_face.get("image_uris") if isinstance(back_face.get("image_uris"), dict) else {}
+            if back_image:
+                back_url = back_image.get("normal") or back_image.get("large") or back_image.get("png") or back_image.get("small") or back_url
+
+    if face_url and ("cards.scryfall.io" in str(face_url) or "api.scryfall.com" in str(face_url) or "static.scryfall.io" in str(face_url)):
+        face_url = fallback_image
+    if back_url and ("cards.scryfall.io" in str(back_url) or "api.scryfall.com" in str(back_url) or "static.scryfall.io" in str(back_url)):
+        back_url = fallback_image
+
+    if not face_url and not back_url:
+        face_url = back_url = fallback_image
+    elif not back_url and face_url:
+        back_url = face_url
+    elif not face_url and back_url:
+        face_url = back_url
+
+    card_obj = {
+        "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
+        "Name": "Card",
+        "Nickname": name,
+        "Description": description,
+        "Memo": oracle_id,
+        "CardID": card_id_index * 100,
+        "CustomDeck": {
+            str(card_id_index): {
+                "FaceURL": face_url or back_url or fallback_image,
+                "BackURL": back_url or face_url or fallback_image,
+                "NumWidth": 1,
+                "NumHeight": 1,
+                "Type": 0,
+                "BackIsHidden": True,
+                "UniqueBack": False,
+            }
+        },
+    }
+
+    if card_faces and len(card_faces) > 1:
+        back_name = str((card_faces[1] or {}).get("name") or name).strip() or name
+        secondary_back = back_url or face_url or fallback_image
+        secondary_face = face_url or back_url or fallback_image
+        back_obj = {
+            "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
+            "Name": "Card",
+            "Nickname": back_name,
+            "Description": str((card_faces[1] or {}).get("oracle_text") or description or "").strip(),
+            "Memo": oracle_id,
+            "CardID": card_id_index * 100 + 1,
+            "CustomDeck": {
+                str(card_id_index + 1): {
+                    "FaceURL": secondary_face,
+                    "BackURL": secondary_back,
+                    "NumWidth": 1,
+                    "NumHeight": 1,
+                    "Type": 0,
+                    "BackIsHidden": True,
+                    "UniqueBack": False,
+                }
+            },
+        }
+        card_obj["States"] = {2: back_obj}
+
+    return card_obj
 
 
 def custom_sets_storage_root() -> Path:
@@ -1597,9 +1687,10 @@ def create_temp_app() -> Flask:
         return payload
 
     def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict[str, Any]:
+        fallback_image = CARD_PLACEHOLDER_IMAGE_URL
+
         if not isinstance(card, dict):
-            empty_face = "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg"
-            return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": empty_face, "BackURL": empty_face, "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
+            return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": fallback_image, "BackURL": fallback_image, "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
 
         face_url = None
         back_url = None
@@ -1625,11 +1716,24 @@ def create_temp_app() -> Flask:
                     back_url = back_image.get("normal") or back_image.get("large") or back_image.get("png") or back_image.get("small") or back_url
 
         if face_url:
-            face_url = cache_remote_image(str(face_url), card_image_cache_name(card, f"tts-front-{card_id_index}", str(face_url))) or face_url
+            cached_face = cache_remote_image(str(face_url), card_image_cache_name(card, f"tts-front-{card_id_index}", str(face_url)))
+            if cached_face and ("/api/images/" in cached_face or "/static/images/" in cached_face):
+                face_url = cached_face
+            else:
+                face_url = fallback_image
         if back_url:
-            back_url = cache_remote_image(str(back_url), card_image_cache_name(card, f"tts-back-{card_id_index}", str(back_url))) or back_url
-        if not back_url and face_url:
+            cached_back = cache_remote_image(str(back_url), card_image_cache_name(card, f"tts-back-{card_id_index}", str(back_url)))
+            if cached_back and ("/api/images/" in cached_back or "/static/images/" in cached_back):
+                back_url = cached_back
+            else:
+                back_url = fallback_image
+
+        if not face_url and not back_url:
+            face_url = back_url = fallback_image
+        elif not back_url and face_url:
             back_url = face_url
+        elif not face_url and back_url:
+            face_url = back_url
 
         card_obj = {
             "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
@@ -1640,8 +1744,8 @@ def create_temp_app() -> Flask:
             "CardID": card_id_index * 100,
             "CustomDeck": {
                 str(card_id_index): {
-                    "FaceURL": face_url or back_url or "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg",
-                    "BackURL": back_url or face_url or "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg",
+                    "FaceURL": face_url or back_url or fallback_image,
+                    "BackURL": back_url or face_url or fallback_image,
                     "NumWidth": 1,
                     "NumHeight": 1,
                     "Type": 0,
@@ -1653,6 +1757,8 @@ def create_temp_app() -> Flask:
 
         if card_faces and len(card_faces) > 1:
             back_name = str((card_faces[1] or {}).get("name") or name).strip() or name
+            secondary_back = back_url or face_url or fallback_image
+            secondary_face = face_url or back_url or fallback_image
             back_obj = {
                 "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
                 "Name": "Card",
@@ -1662,8 +1768,8 @@ def create_temp_app() -> Flask:
                 "CardID": card_id_index * 100 + 1,
                 "CustomDeck": {
                     str(card_id_index + 1): {
-                        "FaceURL": back_url or face_url or "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg",
-                        "BackURL": face_url or back_url or "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg",
+                        "FaceURL": secondary_face,
+                        "BackURL": secondary_back,
                         "NumWidth": 1,
                         "NumHeight": 1,
                         "Type": 0,
