@@ -101,6 +101,30 @@ def test_api_build_accepts_deck_text(monkeypatch):
     assert any('"CustomDeck"' in line for line in lines)
 
 
+def test_api_build_can_group_cards_into_a_single_deck(monkeypatch):
+    custom_app = create_temp_app()
+
+    def fake_search_cards(self, params):
+        q = params.get("q", "")
+        if "Forest" in q:
+            return {"data": [{"object": "card", "id": "forest-1", "name": "Forest", "image_uris": {"normal": "https://example.invalid/forest.jpg"}}]}
+        if "Island" in q:
+            return {"data": [{"object": "card", "id": "island-1", "name": "Island", "image_uris": {"normal": "https://example.invalid/island.jpg"}}]}
+        return {"data": []}
+
+    monkeypatch.setattr(ScryfallService, "search_cards", fake_search_cards)
+
+    client = custom_app.test_client()
+    response = client.post("/api/build", json={"data": "1 Forest\n2 Island\n", "group": True})
+
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload["ObjectStates"][0]["Name"] == "Deck"
+    assert payload["ObjectStates"][0]["DeckIDs"]
+    assert len(payload["ObjectStates"][0]["ContainedObjects"]) == 3
+    assert len(payload["ObjectStates"][0]["CustomDeck"]) == 3
+
+
 def test_deck_card_resolution_accepts_dict_search_params():
     service = ScryfallService(api_base="https://example.invalid")
 

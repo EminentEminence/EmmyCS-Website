@@ -182,6 +182,31 @@ def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict
     return card_obj
 
 
+def tts_native_deck_object(cards: list[dict[str, Any]], deck_name: str = "Deck") -> dict[str, Any]:
+    deck_cards: list[dict[str, Any]] = []
+    deck_ids: list[int] = []
+    custom_deck: dict[str, Any] = {}
+
+    for index, card in enumerate(cards, start=1):
+        card_obj = tts_native_card_object(card, index)
+        deck_cards.append(card_obj)
+        deck_ids.append(int(card_obj.get("CardID", index * 100)))
+        for key, value in (card_obj.get("CustomDeck") or {}).items():
+            custom_deck[str(key)] = value
+
+    return {
+        "ObjectStates": [{
+            "Name": "Deck",
+            "Nickname": deck_name,
+            "Description": "",
+            "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
+            "DeckIDs": deck_ids,
+            "CustomDeck": custom_deck,
+            "ContainedObjects": deck_cards,
+        }]
+    }
+
+
 def custom_sets_storage_root() -> Path:
     configured_path = (os.environ.get(CUSTOM_SETS_STORAGE_ENV) or "").strip()
     if configured_path:
@@ -1871,6 +1896,7 @@ def create_temp_app() -> Flask:
             deck_data = payload.get("data") or ""
             deck_url = payload.get("url") or ""
             fallback_card_by_card = payload.get("fallback_card_by_card", True)
+            group_cards = bool(payload.get("group") or payload.get("group_cards"))
             cards = service.normalize_deck_build_response(
                 deck_data,
                 deck_url=deck_url,
@@ -1878,6 +1904,9 @@ def create_temp_app() -> Flask:
             )
             if not cards:
                 return jsonify({"error": "No cards found in the supplied deck."}), 422
+
+            if group_cards:
+                return jsonify(tts_native_deck_object(cards, deck_name="Deck"))
 
             lines = [json.dumps(tts_native_card_object(card, index + 1)) for index, card in enumerate(cards)]
             return Response("\n".join(lines), mimetype="application/x-ndjson")
