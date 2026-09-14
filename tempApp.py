@@ -1648,6 +1648,7 @@ def create_temp_app() -> Flask:
                 "Name": "Card",
                 "Nickname": card_name,
                 "CardID": index + 1,
+                "DeckIDs": [int(card_id)],
                 "CustomDeck": {
                     card_id: {
                         "FaceURL": face_url,
