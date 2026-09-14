@@ -368,7 +368,17 @@ class ScryfallService:
 
     def _deck_cards_from_moxfield_payload(self, payload: dict[str, Any]) -> list[dict[str, Any]]:
         cards: list[dict[str, Any]] = []
-        board_sections = ("mainboard", "mainBoard", "sideboard", "maybeboard", "commanders", "companions", "attractions", "stickers")
+        board_sections = (
+            "mainboard",
+            "mainBoard",
+            "sideboard",
+            "maybeboard",
+            "commanders",
+            "companions",
+            "attractions",
+            "stickers",
+        )
+        seen_entries: set[tuple[str, str]] = set()
 
         for section in board_sections:
             section_data = payload.get(section) or {}
@@ -384,6 +394,19 @@ class ScryfallService:
                 card_name = str(card.get("name") or entry_name or "").strip()
                 if not card_name:
                     continue
+
+                section_key = f"{section}:{card_name}"
+                if section == "mainboard" and ("mainBoard" in payload and payload.get("mainBoard") is not None):
+                    alias_key = f"mainBoard:{card_name}"
+                    if alias_key in seen_entries:
+                        continue
+                if section == "mainBoard" and ("mainboard" in payload and payload.get("mainboard") is not None):
+                    alias_key = f"mainboard:{card_name}"
+                    if alias_key in seen_entries:
+                        continue
+                if section_key in seen_entries:
+                    continue
+                seen_entries.add(section_key)
 
                 resolved_card = dict(card)
                 resolved_card.setdefault("object", "card")
@@ -417,7 +440,12 @@ class ScryfallService:
             if "moxfield.com" in lowered:
                 payload = self._fetch_moxfield_deck_payload(candidate)
                 lines: list[str] = []
+                seen_entries: set[str] = set()
                 for section in ("mainboard", "mainBoard", "sideboard", "maybeboard", "commanders"):
+                    if section == "mainBoard" and isinstance(payload.get("mainboard"), dict):
+                        continue
+                    if section == "mainboard" and isinstance(payload.get("mainBoard"), dict):
+                        seen_entries.clear()
                     section_data = payload.get(section) or {}
                     if not isinstance(section_data, dict):
                         continue
@@ -429,6 +457,10 @@ class ScryfallService:
                         name = (entry.get("name") or card.get("name") or entry_name or "").strip()
                         if not name:
                             continue
+                        dedupe_key = f"{section}:{name}"
+                        if dedupe_key in seen_entries:
+                            continue
+                        seen_entries.add(dedupe_key)
                         lines.append(f"{quantity} {name}")
                 if lines:
                     return "\n".join(lines)

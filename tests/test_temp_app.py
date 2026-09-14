@@ -215,6 +215,26 @@ def test_moxfield_deck_payload_with_dict_boards_is_parsed(monkeypatch):
     assert all(card.get("image_uris") for card in cards)
 
 
+def test_moxfield_mainboard_aliases_are_merged_without_double_counting(monkeypatch):
+    service = ScryfallService(api_base="https://example.invalid")
+    payload = {
+        "mainboard": {
+            "Aegis Angel": {"quantity": 1, "card": {"name": "Aegis Angel", "image_uris": {"normal": "https://example.invalid/aegis.jpg"}}},
+        },
+        "mainBoard": {
+            "Aegis Angel": {"quantity": 1, "card": {"name": "Aegis Angel", "image_uris": {"normal": "https://example.invalid/aegis.jpg"}}},
+        },
+        "commanders": {
+            "Kaalia of the Vast": {"quantity": 1, "card": {"name": "Kaalia of the Vast", "image_uris": {"normal": "https://example.invalid/kaalia.jpg"}}},
+        },
+    }
+
+    cards = service._deck_cards_from_moxfield_payload(payload)
+
+    assert len(cards) == 2
+    assert {card["name"] for card in cards} == {"Aegis Angel", "Kaalia of the Vast"}
+
+
 def test_normalize_deck_build_response_card_by_card_fallback(monkeypatch):
     service = ScryfallService(api_base="https://example.invalid")
 
