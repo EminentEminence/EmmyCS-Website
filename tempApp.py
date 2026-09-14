@@ -1625,9 +1625,9 @@ def create_temp_app() -> Flask:
                     back_url = back_image.get("normal") or back_image.get("large") or back_image.get("png") or back_image.get("small") or back_url
 
         if face_url:
-            face_url = cache_remote_image(str(face_url), f"tts-front-{card_id_index}") or face_url
+            face_url = cache_remote_image(str(face_url), card_image_cache_name(card, f"tts-front-{card_id_index}", str(face_url))) or face_url
         if back_url:
-            back_url = cache_remote_image(str(back_url), f"tts-back-{card_id_index}") or back_url
+            back_url = cache_remote_image(str(back_url), card_image_cache_name(card, f"tts-back-{card_id_index}", str(back_url))) or back_url
         if not back_url and face_url:
             back_url = face_url
 

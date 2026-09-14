@@ -117,6 +117,20 @@ def test_deck_card_resolution_accepts_dict_search_params():
     assert card["name"] == "Forest"
 
 
+def test_tts_native_card_object_uses_cached_local_images():
+    card = {
+        "name": "Angelic Ascension",
+        "image_uris": {"normal": "https://cards.scryfall.io/normal/front/abcd.jpg"},
+    }
+
+    obj = tempApp.tts_native_card_object(card, 1)
+    face_url = obj["CustomDeck"]["1"]["FaceURL"]
+
+    assert "/api/images/" in face_url
+    assert face_url.endswith(".jpg")
+    assert "cards.scryfall.io" not in face_url
+
+
 def test_deck_import_url_falls_back_to_card_by_card(monkeypatch):
     service = ScryfallService(api_base="https://example.invalid")
 
