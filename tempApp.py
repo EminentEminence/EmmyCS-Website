@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import html
 import json
 import os
 import random
@@ -74,6 +75,7 @@ class ScryfallService:
         self.cache_root.mkdir(parents=True, exist_ok=True)
         self.cache_path = self.cache_root / "scryfall_cache.json"
         self._response_cache: dict[str, dict[str, Any]] = self._load_cache()
+        self._card_cache: dict[str, dict[str, Any]] = {}
 
     def _load_cache(self) -> dict[str, dict[str, Any]]:
         try:
@@ -290,7 +292,18 @@ class ScryfallService:
                 raise RuntimeError("Moxfield deck export did not contain any cards.")
 
             if "scryfall.com" in lowered or "/decks/" in lowered:
-                return self.fetch_deck_export_for_url(candidate)
+                try:
+                    return self.fetch_deck_export_for_url(candidate)
+                except Exception:
+                    html_text = self._fetch_uri_text(candidate)
+                    names: list[str] = []
+                    for _, text in re.findall(r'<a[^>]*href=["\'][^"\']+["\'][^>]*>(.*?)</a>', html_text, flags=re.IGNORECASE | re.DOTALL):
+                        name = html.unescape(re.sub(r'<[^>]+>', '', text)).strip()
+                        if name:
+                            names.append(name)
+                    if names:
+                        return "\n".join(f"1 {name}" for name in names)
+                    raise
 
             if "deckstats.net" in lowered and "export_txt=1" not in lowered:
                 return self._fetch_uri_text(candidate.rstrip("/") + "?include_comments=1&export_txt=1")
@@ -669,16 +682,36 @@ class ScryfallService:
         return [best]
 
     def get_card_by_id(self, card_id: str) -> dict[str, Any]:
+        cache_key = f"id:{card_id}"
+        cached = self._card_cache.get(cache_key)
+        if isinstance(cached, dict):
+            return cached
+
         local_card = self.custom_store.get_card_by_id(card_id)
         if local_card:
+            self._card_cache[cache_key] = local_card
             return local_card
-        return self.request_json(f"/cards/{card_id}")
+
+        payload = self.request_json(f"/cards/{card_id}")
+        if isinstance(payload, dict):
+            self._card_cache[cache_key] = payload
+        return payload
 
     def get_card_by_set_number(self, set_code: str, collector_number: str) -> dict[str, Any]:
+        cache_key = f"set:{set_code}:{collector_number}"
+        cached = self._card_cache.get(cache_key)
+        if isinstance(cached, dict):
+            return cached
+
         local_card = self.custom_store.get_card_by_set_number(set_code, collector_number)
         if local_card:
+            self._card_cache[cache_key] = local_card
             return local_card
-        return self.request_json(f"/cards/{set_code}/{collector_number}")
+
+        payload = self.request_json(f"/cards/{set_code}/{collector_number}")
+        if isinstance(payload, dict):
+            self._card_cache[cache_key] = payload
+        return payload
 
     def get_random_card(self) -> dict[str, Any]:
         local_cards = self.custom_store.all_cards()
@@ -890,8 +923,7 @@ def create_temp_app() -> Flask:
         if image_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/", "/")):
             return image_url
         if image_url.startswith(("http://", "https://")):
-            local_name = card_image_cache_name(card, image_key, image_url)
-            return cache_remote_image(image_url, local_name)
+            return url_for("api_proxy_image", url=image_url, _external=True)
         return image_url
 
     def proxy_image_uris_for_card(card: dict[str, Any]) -> dict[str, Any]:
@@ -1592,9 +1624,9 @@ def create_temp_app() -> Flask:
                     back_url = back_image.get("normal") or back_image.get("large") or back_image.get("png") or back_image.get("small") or back_url
 
         if face_url:
-            face_url = proxied_image_url(str(face_url), card=card, image_key=f"tts-front-{card_id_index}") or face_url
+            face_url = cache_remote_image(str(face_url), f"tts-front-{card_id_index}") or face_url
         if back_url:
-            back_url = proxied_image_url(str(back_url), card=card, image_key=f"tts-back-{card_id_index}") or back_url
+            back_url = cache_remote_image(str(back_url), f"tts-back-{card_id_index}") or back_url
         if not back_url and face_url:
             back_url = face_url
 
@@ -1666,7 +1698,7 @@ def create_temp_app() -> Flask:
             abort(403)
 
         cached_url = cache_remote_image(remote_url)
-        if not cached_url or cached_url.startswith(("http://", "https://")) and cached_url.startswith(("https://magic.emmycs.co.uk/", "http://magic.emmycs.co.uk/")):
+        if not cached_url:
             abort(502)
         return redirect(cached_url, code=302)
 

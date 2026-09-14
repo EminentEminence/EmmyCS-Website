@@ -7,6 +7,5 @@ WORKSPACE_FILE_INDEX.md
 requirements.txt
 MSE Exporter/
 MSE Exporter Output/
-tests/
 working/
 data/cache/
