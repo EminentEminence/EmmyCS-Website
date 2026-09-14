@@ -855,31 +855,21 @@ class ScryfallService:
         if not normalized_query:
             return cards
 
-        ranked_matches: list[tuple[int, int, str, dict[str, Any]]] = []
+        exact_matches: list[dict[str, Any]] = []
         for card in cards:
             if not isinstance(card, dict):
                 continue
             name = str(card.get("name") or "").strip().lower()
-            if not name:
-                continue
             if name == normalized_query:
-                score = 1000
-            elif name.startswith(normalized_query):
-                score = 500
-            elif normalized_query in name:
-                score = 200
-            else:
-                continue
-            ranked_matches.append((score, len(name), name, card))
+                exact_matches.append(card)
 
-        if not ranked_matches:
-            return cards
+        if len(exact_matches) == 1:
+            return exact_matches
 
-        ranked_matches.sort(key=lambda item: (-item[0], item[1], item[2]))
-        best = ranked_matches[0][3]
-        if ranked_matches[0][0] >= 1000:
-            return [card for _, _, _, card in ranked_matches if str(card.get("name") or "").strip().lower() == normalized_query]
-        return [best]
+        # Preserve the full Scryfall result set for name searches and partial searches.
+        # Returning only a single "best" guess breaks the importer contract for
+        # commands that rely on a list of card candidates (for example, name:Forest).
+        return cards
 
     def get_card_by_id(self, card_id: str) -> dict[str, Any]:
         cache_key = f"id:{card_id}"

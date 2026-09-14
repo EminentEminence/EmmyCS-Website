@@ -53,6 +53,27 @@ def test_search_results_proxy_remote_images(monkeypatch):
     assert payload["data"][0]["image_uris"]["normal"].startswith("https://magic.emmycs.co.uk/api/proxy-image?url=")
 
 
+def test_search_cards_preserves_full_scryfall_result_set_for_partial_queries():
+    service = ScryfallService(api_base="https://example.invalid")
+    service.custom_store.search_cards = lambda *args, **kwargs: type("LocalSearch", (), {"data": [], "has_more": False, "next_page": None, "total_cards": 0})()
+    service.request_json = lambda path, params=None: {
+        "object": "list",
+        "total_cards": 2,
+        "has_more": False,
+        "next_page": None,
+        "data": [
+            {"object": "card", "id": "a", "name": "Card A"},
+            {"object": "card", "id": "b", "name": "Card B"},
+        ],
+    }
+
+    result = service.search_cards({"q": "card", "page": 1})
+
+    assert result["object"] == "list"
+    assert result["total_cards"] == 2
+    assert [card["name"] for card in result["data"]] == ["Card A", "Card B"]
+
+
 def test_scryfall_deck_export_is_proxied(monkeypatch):
     custom_app = create_temp_app()
 
