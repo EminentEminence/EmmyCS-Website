@@ -217,18 +217,45 @@ class ScryfallService:
                 if not match:
                     raise RuntimeError("Moxfield deck URL was malformed.")
                 deck_id = match.group(1)
-                api_url = f"https://api.moxfield.com/v2/decks/all/{deck_id}/"
-                request = Request(api_url, headers={"Accept": "application/json", "User-Agent": "WebsiteV2TempApp/1.0"})
+                api_url = f"https://api2.moxfield.com/v2/decks/all/{deck_id}/"
+                request = Request(
+                    api_url,
+                    headers={
+                        "Accept": "application/json, text/plain, */*",
+                        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+                        "Origin": "https://moxfield.com",
+                        "Referer": "https://moxfield.com/",
+                    },
+                )
                 with urlopen(request, timeout=12) as response:
                     payload = json.loads(response.read().decode("utf-8"))
+
                 lines: list[str] = []
-                for section in ("mainBoard", "sideboard", "maybeboard"):
-                    for entry in payload.get(section, []) or []:
+                board_sections = ("mainboard", "mainBoard", "sideboard", "maybeboard", "commanders")
+
+                for section in board_sections:
+                    section_data = payload.get(section) or {}
+                    if not isinstance(section_data, dict):
+                        continue
+                    for entry_name, entry in section_data.items():
+                        if not isinstance(entry, dict):
+                            continue
                         quantity = int(entry.get("quantity") or 1)
-                        name = (entry.get("name") or entry.get("cardName") or "").strip()
+                        card = entry.get("card") if isinstance(entry.get("card"), dict) else {}
+                        name = (entry.get("name") or card.get("name") or entry_name or "").strip()
                         if not name:
                             continue
                         lines.append(f"{quantity} {name}")
+
+                if not lines:
+                    for section in ("mainBoard", "sideboard", "maybeboard"):
+                        for entry in payload.get(section, []) or []:
+                            quantity = int(entry.get("quantity") or 1)
+                            name = (entry.get("name") or entry.get("cardName") or "").strip()
+                            if not name:
+                                continue
+                            lines.append(f"{quantity} {name}")
+
                 if lines:
                     return "\n".join(lines)
                 raise RuntimeError("Moxfield deck export did not contain any cards.")
