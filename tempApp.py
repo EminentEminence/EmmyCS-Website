@@ -1511,10 +1511,11 @@ def create_temp_app() -> Flask:
 
     def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict[str, Any]:
         if not isinstance(card, dict):
-            return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": "https://i.stack.imgur.com/787gj.png", "BackURL": "https://i.stack.imgur.com/787gj.png", "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
+            empty_face = "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg"
+            return {"Name": "Card", "Nickname": "Card", "CardID": card_id_index * 100, "CustomDeck": {str(card_id_index): {"FaceURL": empty_face, "BackURL": empty_face, "NumWidth": 1, "NumHeight": 1, "Type": 0, "BackIsHidden": True, "UniqueBack": False}}}
 
         face_url = None
-        back_url = "https://i.stack.imgur.com/787gj.png"
+        back_url = None
         name = str(card.get("name") or "Card").strip() or "Card"
         description = str(card.get("oracle_text") or card.get("text") or "").strip()
         oracle_id = str(card.get("oracle_id") or card.get("id") or "").strip()
@@ -1540,6 +1541,8 @@ def create_temp_app() -> Flask:
             face_url = proxied_image_url(str(face_url), card=card, image_key=f"tts-front-{card_id_index}") or face_url
         if back_url:
             back_url = proxied_image_url(str(back_url), card=card, image_key=f"tts-back-{card_id_index}") or back_url
+        if not back_url and face_url:
+            back_url = face_url
 
         card_obj = {
             "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
@@ -1550,8 +1553,8 @@ def create_temp_app() -> Flask:
             "CardID": card_id_index * 100,
             "CustomDeck": {
                 str(card_id_index): {
-                    "FaceURL": face_url or "https://i.stack.imgur.com/787gj.png",
-                    "BackURL": back_url,
+                    "FaceURL": face_url or back_url or "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg",
+                    "BackURL": back_url or face_url or "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg",
                     "NumWidth": 1,
                     "NumHeight": 1,
                     "Type": 0,
@@ -1572,8 +1575,8 @@ def create_temp_app() -> Flask:
                 "CardID": card_id_index * 100 + 1,
                 "CustomDeck": {
                     str(card_id_index + 1): {
-                        "FaceURL": back_url,
-                        "BackURL": "https://i.stack.imgur.com/787gj.png",
+                        "FaceURL": back_url or face_url or "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg",
+                        "BackURL": face_url or back_url or "https://cards.scryfall.io/normal/front/00000000-0000-0000-0000-000000000000.jpg",
                         "NumWidth": 1,
                         "NumHeight": 1,
                         "Type": 0,
