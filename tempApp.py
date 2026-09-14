@@ -870,11 +870,15 @@ class ScryfallService:
         bare_name_query = re.sub(r"\s+", " ", bare_name_query).strip().strip('"')
         contains_operator = ":" in simplified_query or bool(re.search(r"(^|\s)(or|and|not)(?=\s|$)", simplified_query))
         if bare_name_query and filtered_remote_cards and not contains_operator:
-            exact_name_matches = [
-                card for card in filtered_remote_cards
-                if isinstance(card, dict) and str(card.get("name") or "").strip().lower() == bare_name_query
-            ]
+            exact_name_matches = []
+            for card in filtered_remote_cards:
+                if not isinstance(card, dict):
+                    continue
+                card_name = str(card.get("name") or "").strip()
+                if self._name_matches_lookup(card_name, bare_name_query):
+                    exact_name_matches.append(card)
             if exact_name_matches:
+                exact_name_matches.sort(key=lambda item: (str(item.get("set") or ""), str(item.get("collector_number") or ""), str(item.get("name") or "")))
                 best_match = dict(exact_name_matches[0])
                 proxy_remote_card_images(best_match)
                 return {**best_match, "object": "card"}
@@ -900,6 +904,26 @@ class ScryfallService:
             "data": merged_cards,
             "total_cards": remote_total + max(local_search.total_cards, len(merged_local)),
         }
+
+    def _normalize_name_lookup(self, value: str) -> str:
+        candidate = (value or "").strip().lower()
+        candidate = candidate.replace("’", "'").replace("“", '"').replace("”", '"')
+        candidate = candidate.replace("-", " ")
+        candidate = re.sub(r"[\[\]():,./]", " ", candidate)
+        candidate = re.sub(r"\b(?:lvl|level)\s*\d+\b", "", candidate)
+        candidate = re.sub(r"\s+", " ", candidate).strip()
+        return candidate.strip('"')
+
+    def _name_matches_lookup(self, card_name: str, query: str) -> bool:
+        query_name = self._normalize_name_lookup(query)
+        candidate_name = self._normalize_name_lookup(card_name)
+        if not query_name or not candidate_name:
+            return False
+        if query_name == candidate_name:
+            return True
+        if len(query_name.split()) >= 2 and candidate_name.startswith(query_name):
+            return True
+        return False
 
     def _filter_name_matches(self, cards: list[dict[str, Any]], query: str) -> list[dict[str, Any]]:
         cleaned = (query or "").strip()
@@ -929,8 +953,8 @@ class ScryfallService:
         for card in cards:
             if not isinstance(card, dict):
                 continue
-            name = str(card.get("name") or "").strip().lower()
-            if name == normalized_query:
+            name = str(card.get("name") or "")
+            if self._name_matches_lookup(name, normalized_query):
                 exact_matches.append(card)
 
         if exact_matches:

@@ -98,6 +98,28 @@ def test_search_cards_returns_single_card_for_plain_name_queries_with_multiple_p
     assert result["id"] == "a"
 
 
+def test_search_cards_collapses_to_best_exact_match_for_name_variants_like_silver_wolf():
+    service = ScryfallService(api_base="https://example.invalid")
+    service.custom_store.search_cards = lambda *args, **kwargs: type("LocalSearch", (), {"data": [], "has_more": False, "next_page": None, "total_cards": 0})()
+    service.request_json = lambda path, params=None: {
+        "object": "list",
+        "total_cards": 3,
+        "has_more": False,
+        "next_page": None,
+        "data": [
+            {"object": "card", "id": "silver-wolf", "name": "Silver Wolf, Lvl 999", "set": "hsr", "collector_number": "0024", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/silver-wolf.jpg"}},
+            {"object": "card", "id": "wolfir-silverheart", "name": "Wolfir Silverheart", "set": "avr", "collector_number": "206", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/wolfir.jpg"}},
+            {"object": "card", "id": "lambholt", "name": "Lambholt Elder // Silverpelt Werewolf", "set": "dka", "collector_number": "122", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/lambholt.jpg"}},
+        ],
+    }
+
+    result = service.search_cards({"q": "Silver Wolf", "page": 1})
+
+    assert result["object"] == "card"
+    assert result["name"] == "Silver Wolf, Lvl 999"
+    assert result["id"] == "silver-wolf"
+
+
 def test_search_cards_preserves_full_scryfall_result_set_for_partial_queries():
     service = ScryfallService(api_base="https://example.invalid")
     service.custom_store.search_cards = lambda *args, **kwargs: type("LocalSearch", (), {"data": [], "has_more": False, "next_page": None, "total_cards": 0})()
