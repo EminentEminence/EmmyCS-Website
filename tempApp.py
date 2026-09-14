@@ -198,6 +198,50 @@ class ScryfallService:
         export_format = "csv" if "export/csv" in lowered or "format=csv" in lowered else "text"
         return self.fetch_deck_export(deck_path, export_format)
 
+    def _fetch_moxfield_deck_payload(self, deck_url: str) -> dict[str, Any]:
+        match = re.search(r"moxfield\.com/(?:decks|deck)/([^/?#]+)", deck_url)
+        if not match:
+            raise RuntimeError("Moxfield deck URL was malformed.")
+        deck_id = match.group(1)
+        api_url = f"https://api2.moxfield.com/v2/decks/all/{deck_id}/"
+        request = Request(
+            api_url,
+            headers={
+                "Accept": "application/json, text/plain, */*",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
+                "Origin": "https://moxfield.com",
+                "Referer": "https://moxfield.com/",
+            },
+        )
+        with urlopen(request, timeout=12) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+        if not isinstance(payload, dict):
+            raise RuntimeError("Moxfield deck export did not contain any cards.")
+        return payload
+
+    def _deck_cards_from_moxfield_payload(self, payload: dict[str, Any]) -> list[dict[str, Any]]:
+        cards: list[dict[str, Any]] = []
+        board_sections = ("mainboard", "mainBoard", "sideboard", "maybeboard", "commanders", "companions", "attractions", "stickers")
+
+        for section in board_sections:
+            section_data = payload.get(section) or {}
+            if not isinstance(section_data, dict):
+                continue
+            for entry_name, entry in section_data.items():
+                if not isinstance(entry, dict):
+                    continue
+                quantity = max(int(entry.get("quantity") or 1), 1)
+                card = entry.get("card") if isinstance(entry.get("card"), dict) else {}
+                if not isinstance(card, dict) or not str(card.get("name") or entry_name or "").strip():
+                    continue
+                normalized_card = dict(card)
+                normalized_card.setdefault("object", "card")
+                normalized_card.setdefault("name", str(entry_name).strip())
+                normalized_card.setdefault("id", str(card.get("scryfall_id") or card.get("id") or entry_name).strip())
+                for _ in range(quantity):
+                    cards.append(normalized_card)
+        return cards
+
     def fetch_deck_text_from_url(self, deck_url: str) -> str:
         candidate = (deck_url or "").strip()
         if not candidate:
@@ -206,19 +250,18 @@ class ScryfallService:
         lowered = candidate.lower()
         try:
             if "moxfield.com" in lowered:
-                match = re.search(r"moxfield\.com/(?:decks|deck)/([^/?#]+)", candidate)
-                if not match:
-                    raise RuntimeError("Moxfield deck URL was malformed.")
-                deck_id = match.group(1)
-                api_url = f"https://api.moxfield.com/v2/decks/all/{deck_id}/"
-                request = Request(api_url, headers={"Accept": "application/json", "User-Agent": "WebsiteV2TempApp/1.0"})
-                with urlopen(request, timeout=12) as response:
-                    payload = json.loads(response.read().decode("utf-8"))
+                payload = self._fetch_moxfield_deck_payload(candidate)
                 lines: list[str] = []
-                for section in ("mainBoard", "sideboard", "maybeboard"):
-                    for entry in payload.get(section, []) or []:
+                for section in ("mainboard", "mainBoard", "sideboard", "maybeboard", "commanders"):
+                    section_data = payload.get(section) or {}
+                    if not isinstance(section_data, dict):
+                        continue
+                    for entry_name, entry in section_data.items():
+                        if not isinstance(entry, dict):
+                            continue
                         quantity = int(entry.get("quantity") or 1)
-                        name = (entry.get("name") or entry.get("cardName") or "").strip()
+                        card = entry.get("card") if isinstance(entry.get("card"), dict) else {}
+                        name = (entry.get("name") or card.get("name") or entry_name or "").strip()
                         if not name:
                             continue
                         lines.append(f"{quantity} {name}")
@@ -317,20 +360,68 @@ class ScryfallService:
                     return card
         return None
 
-    def normalize_deck_build_response(self, raw_text: str, deck_url: str | None = None) -> list[dict[str, Any]]:
+    def normalize_deck_build_response(
+        self,
+        raw_text: str,
+        deck_url: str | None = None,
+        fallback_card_by_card: bool = True,
+    ) -> list[dict[str, Any]]:
+        if deck_url and "moxfield.com" in deck_url.lower():
+            try:
+                payload = self._fetch_moxfield_deck_payload(deck_url)
+                cards = self._deck_cards_from_moxfield_payload(payload)
+                if cards:
+                    return cards
+            except Exception:
+                pass
+
         source_text = raw_text
         if deck_url:
-            source_text = self.fetch_deck_text_from_url(deck_url)
+            try:
+                source_text = self.fetch_deck_text_from_url(deck_url)
+            except Exception:
+                if fallback_card_by_card:
+                    source_text = str(raw_text or "")
+                else:
+                    raise
+
         if not source_text:
             return []
 
         cards: list[dict[str, Any]] = []
-        for quantity, name, set_code, collector_number in self.parse_deck_list(source_text):
+        parsed_entries = self.parse_deck_list(source_text)
+
+        for quantity, name, set_code, collector_number in parsed_entries:
             card = self.resolve_deck_entry_card(name, set_code, collector_number)
+            if not card and fallback_card_by_card:
+                clean_name = re.sub(r"\s*#?\d+[a-z]?$", "", name, flags=re.IGNORECASE).strip()
+                card = self.resolve_deck_entry_card(clean_name or name)
             if not card:
                 continue
             for _ in range(quantity):
                 cards.append(card)
+
+        if cards:
+            return cards
+
+        if not fallback_card_by_card:
+            return []
+
+        for line in str(source_text or "").splitlines():
+            entry = line.strip()
+            if not entry or entry.startswith("//"):
+                continue
+            match = re.match(r"^(\d+)\s+(.+)$", entry)
+            if not match:
+                continue
+            quantity = max(int(match.group(1)), 1)
+            card_name = match.group(2).strip()
+            card = self.resolve_deck_entry_card(card_name)
+            if not card:
+                continue
+            for _ in range(quantity):
+                cards.append(card)
+
         return cards
 
     def normalize_search_parameters(self, args: dict[str, str]) -> SearchParameters:
@@ -1515,7 +1606,12 @@ def create_temp_app() -> Flask:
             payload = request.get_json(silent=True) or {}
             deck_data = payload.get("data") or ""
             deck_url = payload.get("url") or ""
-            cards = service.normalize_deck_build_response(deck_data, deck_url=deck_url)
+            fallback_card_by_card = payload.get("fallback_card_by_card", True)
+            cards = service.normalize_deck_build_response(
+                deck_data,
+                deck_url=deck_url,
+                fallback_card_by_card=fallback_card_by_card,
+            )
             if not cards:
                 return jsonify({"error": "No cards found in the supplied deck."}), 422
 
