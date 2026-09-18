@@ -38,8 +38,8 @@ DEFAULT_SORT_DIRECTION = "desc"
 DEFAULT_RESULTS_PER_PAGE = 12
 CUSTOM_SETS_STORAGE_ENV = "CUSTOM_SETS_STORAGE_DIR"
 SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "https://magic.emmycs.co.uk").rstrip("/")
-CARD_BACK_IMAGE_URL = "https://i.stack.imgur.com/787gj.png"
-CARD_PLACEHOLDER_IMAGE_URL = f"{SITE_BASE_URL}/static/images/overlay.png"
+CARD_BACK_IMAGE_URL = "https://static.wikia.nocookie.net/mtgsalvation_gamepedia/images/f/f8/Magic_card_back.jpg/revision/latest?cb=20140813141013"
+CARD_PLACEHOLDER_IMAGE_URL = CARD_BACK_IMAGE_URL
 REMOTE_IMAGE_SOURCE_MAP: dict[str, str] = {}
 
 
