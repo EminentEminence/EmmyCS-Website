@@ -197,11 +197,11 @@ def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict
         "CustomDeck": {
             str(card_id_index): {
                 "FaceURL": face_url,
-                "BackURL": card_back_image,
+                "BackURL": back_face_url or card_back_image,
                 "NumWidth": 1,
                 "NumHeight": 1,
                 "Type": 0,
-                "BackIsHidden": True,
+                "BackIsHidden": False,
                 "UniqueBack": False,
             }
         },
@@ -219,11 +219,11 @@ def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict
             "CustomDeck": {
                 str(card_id_index): {
                     "FaceURL": back_face_url or fallback_image,
-                    "BackURL": card_back_image,
+                    "BackURL": face_url,
                     "NumWidth": 1,
                     "NumHeight": 1,
                     "Type": 0,
-                    "BackIsHidden": True,
+                    "BackIsHidden": False,
                     "UniqueBack": False,
                 }
             },
