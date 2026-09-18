@@ -312,6 +312,26 @@ def test_tts_native_card_object_uses_mtg_back_for_card_backside():
     assert dfc_obj["States"][2]["CustomDeck"]["1"]["BackIsHidden"] is False
 
 
+def test_tts_native_deck_object_keeps_dual_face_custom_deck_maps():
+    card = {
+        "name": "Liliana, Heretical Healer",
+        "card_faces": [
+            {"name": "Liliana, Heretical Healer", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/liliana-front.jpg"}},
+            {"name": "Liliana, Defiant Necromancer", "image_uris": {"normal": "https://cards.scryfall.io/normal/front/liliana-back.jpg"}},
+        ],
+    }
+
+    deck = tempApp.tts_native_deck_object([card], "Deck")
+    custom_deck = deck["ObjectStates"][0]["CustomDeck"]
+    contained = deck["ObjectStates"][0]["ContainedObjects"][0]
+
+    assert "1" in custom_deck
+    assert custom_deck["1"]["FaceURL"] != tempApp.CARD_BACK_IMAGE_URL
+    assert custom_deck["1"]["BackURL"] == tempApp.CARD_BACK_IMAGE_URL
+    assert contained["States"][2]["CustomDeck"]["1"]["FaceURL"] != tempApp.CARD_BACK_IMAGE_URL
+    assert contained["States"][2]["CustomDeck"]["1"]["BackURL"] == tempApp.CARD_BACK_IMAGE_URL
+
+
 def test_deck_import_url_falls_back_to_card_by_card(monkeypatch):
     service = ScryfallService(api_base="https://example.invalid")
 

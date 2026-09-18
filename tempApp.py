@@ -246,6 +246,12 @@ def tts_native_deck_object(cards: list[dict[str, Any]], deck_name: str = "Deck")
         for key, value in (card_obj.get("CustomDeck") or {}).items():
             custom_deck[str(key)] = value
 
+        for state_index, state in (card_obj.get("States") or {}).items():
+            if not isinstance(state, dict):
+                continue
+            for key, value in (state.get("CustomDeck") or {}).items():
+                custom_deck[str(key)] = value
+
     return {
         "ObjectStates": [{
             "Name": "Deck",
