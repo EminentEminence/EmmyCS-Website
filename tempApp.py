@@ -208,6 +208,7 @@ def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict
     }
 
     if card_faces and len(card_faces) > 1:
+        card_obj["CustomDeck"][str(card_id_index)]["BackIsHidden"] = False
         back_name = str((card_faces[1] or {}).get("name") or name).strip() or name
         back_obj = {
             "Transform": {"posX": 0, "posY": 0, "posZ": 0, "rotX": 0, "rotY": 0, "rotZ": 0, "scaleX": 1, "scaleY": 1, "scaleZ": 1},
@@ -223,7 +224,7 @@ def tts_native_card_object(card: dict[str, Any], card_id_index: int = 1) -> dict
                     "NumWidth": 1,
                     "NumHeight": 1,
                     "Type": 0,
-                    "BackIsHidden": True,
+                    "BackIsHidden": False,
                     "UniqueBack": False,
                 }
             },

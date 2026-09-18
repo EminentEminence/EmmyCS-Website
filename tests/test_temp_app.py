@@ -306,8 +306,10 @@ def test_tts_native_card_object_uses_mtg_back_for_card_backside():
     dfc_obj = tempApp.tts_native_card_object(dfc, 1)
 
     assert dfc_obj["CustomDeck"]["1"]["BackURL"] == tempApp.CARD_BACK_IMAGE_URL
+    assert dfc_obj["CustomDeck"]["1"]["BackIsHidden"] is False
     assert dfc_obj["States"][2]["CustomDeck"]["1"]["FaceURL"] != tempApp.CARD_BACK_IMAGE_URL
     assert dfc_obj["States"][2]["CustomDeck"]["1"]["BackURL"] == tempApp.CARD_BACK_IMAGE_URL
+    assert dfc_obj["States"][2]["CustomDeck"]["1"]["BackIsHidden"] is False
 
 
 def test_deck_import_url_falls_back_to_card_by_card(monkeypatch):
