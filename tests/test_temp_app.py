@@ -140,6 +140,46 @@ def test_custom_set_store_avoids_substring_false_positives_for_multiword_name_qu
         assert [card["name"] for card in result.data] == ["Silver Wolf, Lvl 999"]
 
 
+def test_custom_set_store_matches_names_with_commas_and_full_card_titles():
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        store = CustomSetStore(Path(tmp_dir))
+        store.save_uploaded_payload({
+            "set": {"code": "hsr", "name": "Honkai: Star Rail", "set_type": "custom"},
+            "cards": [
+                {"id": "evanescia-1", "oracle_id": "oracle-1", "name": "Evanescia, Halcyone Evermore", "set": "hsr", "collector_number": "001"},
+                {"id": "yao-guang", "oracle_id": "oracle-2", "name": "Yao Guang, Seer Strategist", "set": "hsr", "collector_number": "002"},
+            ],
+        })
+
+        evanescia = store.search_cards("Evanescia, Halcyone Evermore", page=1, per_page=12)
+        yao = store.search_cards("Yao Guang, Seer Strategist", page=1, per_page=12)
+
+        assert [card["name"] for card in evanescia.data] == ["Evanescia, Halcyone Evermore"]
+        assert [card["name"] for card in yao.data] == ["Yao Guang, Seer Strategist"]
+
+
+def test_search_cards_falls_back_to_local_custom_matches_when_remote_search_fails():
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        store = CustomSetStore(Path(tmp_dir))
+        store.save_uploaded_payload({
+            "set": {"code": "hsr", "name": "Honkai: Star Rail", "set_type": "custom"},
+            "cards": [
+                {"id": "evanescia-1", "oracle_id": "oracle-1", "name": "Evanescia, Halcyone Evermore", "set": "hsr", "collector_number": "001"},
+                {"id": "yao-guang", "oracle_id": "oracle-2", "name": "Yao Guang, Seer Strategist", "set": "hsr", "collector_number": "002"},
+            ],
+        })
+
+        service = ScryfallService(api_base="https://example.invalid")
+        service.custom_store = store
+        service.request_json = lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError("offline"))
+
+        result = service.search_cards({"q": "Yao Guang, Seer Strategist", "page": 1})
+
+        assert result["object"] == "card"
+        assert result["name"] == "Yao Guang, Seer Strategist"
+        assert result["id"] == "yao-guang"
+
+
 def test_search_cards_preserves_full_scryfall_result_set_for_partial_queries():
     service = ScryfallService(api_base="https://example.invalid")
     service.custom_store.search_cards = lambda *args, **kwargs: type("LocalSearch", (), {"data": [], "has_more": False, "next_page": None, "total_cards": 0})()

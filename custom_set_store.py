@@ -404,12 +404,21 @@ class CustomSetStore:
 
         return True
 
+    def _normalize_name_lookup(self, value: str) -> str:
+        candidate = (value or "").strip().lower()
+        candidate = candidate.replace("’", "'").replace("“", '"').replace("”", '"')
+        candidate = candidate.replace("-", " ").replace("/", " ").replace("\\", " ")
+        candidate = re.sub(r"[^a-z0-9\s]", " ", candidate)
+        candidate = re.sub(r"\b(?:lvl|level)\s*\d+\b", "", candidate)
+        candidate = re.sub(r"\s+", " ", candidate).strip()
+        return candidate.strip('"')
+
     def _contains_any(self, card: dict[str, Any], token: str) -> bool:
-        normalized = token.lower().strip()
+        normalized = self._normalize_name_lookup(token)
         if not normalized:
             return True
 
-        name_value = str(card.get("name", "")).lower()
+        name_value = self._normalize_name_lookup(str(card.get("name", "")))
         if normalized == name_value:
             return True
 
@@ -417,11 +426,11 @@ class CustomSetStore:
             return True
 
         haystacks = [
-            str(card.get("oracle_text", "")),
-            str(card.get("type_line", "")),
-            str(card.get("set_name", "")),
+            self._normalize_name_lookup(str(card.get("oracle_text", ""))),
+            self._normalize_name_lookup(str(card.get("type_line", ""))),
+            self._normalize_name_lookup(str(card.get("set_name", ""))),
         ]
-        return any(re.search(r"\b" + re.escape(normalized) + r"\b", value.lower()) for value in haystacks)
+        return any(re.search(r"\b" + re.escape(normalized) + r"\b", value) for value in haystacks)
 
     def _match_color_clause(self, card: dict[str, Any], value: str) -> bool:
         normalized = value.strip().upper()

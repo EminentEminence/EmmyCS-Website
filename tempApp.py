@@ -885,12 +885,17 @@ class ScryfallService:
             "include_variations": str(params.include_variations).lower(),
             "include_digital": str(params.include_digital).lower(),
         }
-        remote_results = self.request_json("/cards/search", query_params)
-        remote_cards = remote_results.get("data", [])
-        filtered_remote_cards = self._filter_name_matches(remote_cards, params.query)
-        for card in filtered_remote_cards:
-            if isinstance(card, dict):
-                proxy_remote_card_images(card)
+        try:
+            remote_results = self.request_json("/cards/search", query_params)
+        except RuntimeError:
+            remote_results = {"object": "list", "has_more": False, "next_page": None, "total_cards": 0, "data": []}
+            filtered_remote_cards = []
+        else:
+            remote_cards = remote_results.get("data", [])
+            filtered_remote_cards = self._filter_name_matches(remote_cards, params.query)
+            for card in filtered_remote_cards:
+                if isinstance(card, dict):
+                    proxy_remote_card_images(card)
 
         simplified_query = params.query.strip().lower()
         bare_name_query = re.sub(r"^name:\s*", "", simplified_query).strip()
@@ -936,8 +941,8 @@ class ScryfallService:
     def _normalize_name_lookup(self, value: str) -> str:
         candidate = (value or "").strip().lower()
         candidate = candidate.replace("’", "'").replace("“", '"').replace("”", '"')
-        candidate = candidate.replace("-", " ")
-        candidate = re.sub(r"[\[\]():,./]", " ", candidate)
+        candidate = candidate.replace("-", " ").replace("/", " ").replace("\\", " ")
+        candidate = re.sub(r"[^a-z0-9\s]", " ", candidate)
         candidate = re.sub(r"\b(?:lvl|level)\s*\d+\b", "", candidate)
         candidate = re.sub(r"\s+", " ", candidate).strip()
         return candidate.strip('"')
