@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import shlex
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -334,7 +335,11 @@ class CustomSetStore:
         if not query_text:
             return True
 
-        clauses = [part for part in query_text.split() if part]
+        try:
+            clauses = shlex.split(query_text)
+        except ValueError:
+            clauses = [part for part in query_text.split() if part]
+
         for clause in clauses:
             if ":" not in clause:
                 if not self._contains_any(card, clause):
@@ -400,17 +405,23 @@ class CustomSetStore:
         return True
 
     def _contains_any(self, card: dict[str, Any], token: str) -> bool:
-        normalized = token.lower()
+        normalized = token.lower().strip()
+        if not normalized:
+            return True
+
+        name_value = str(card.get("name", "")).lower()
+        if normalized == name_value:
+            return True
+
+        if re.search(r"\b" + re.escape(normalized) + r"\b", name_value):
+            return True
+
         haystacks = [
-            str(card.get("name", "")),
             str(card.get("oracle_text", "")),
             str(card.get("type_line", "")),
             str(card.get("set_name", "")),
         ]
-        matches = [value.lower() for value in haystacks]
-        if normalized in {name.lower() for name in [str(card.get("name", ""))]}:
-            return True
-        return any(normalized in value for value in matches)
+        return any(re.search(r"\b" + re.escape(normalized) + r"\b", value.lower()) for value in haystacks)
 
     def _match_color_clause(self, card: dict[str, Any], value: str) -> bool:
         normalized = value.strip().upper()

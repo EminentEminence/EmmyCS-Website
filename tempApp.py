@@ -43,6 +43,22 @@ CARD_PLACEHOLDER_IMAGE_URL = f"{SITE_BASE_URL}/static/images/overlay.png"
 REMOTE_IMAGE_SOURCE_MAP: dict[str, str] = {}
 
 
+def coerce_bool(value: Any, default: bool = False) -> bool:
+    if value is None:
+        return default
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"true", "1", "yes", "y", "on"}:
+            return True
+        if normalized in {"false", "0", "no", "n", "off", ""}:
+            return False
+    if isinstance(value, (int, float)):
+        return bool(value)
+    return bool(value)
+
+
 def card_image_cache_name(card: dict[str, Any] | None, image_key: str, image_url: str | None) -> str:
     card_fields = [
         (card or {}).get("id"),
@@ -486,6 +502,8 @@ class ScryfallService:
                             resolved_card = {**card_lookup, **resolved_card}
                     except Exception:
                         pass
+                if not resolved_card.get("image_uris") and card_name:
+                    resolved_card.setdefault("image_uris", {"normal": CARD_PLACEHOLDER_IMAGE_URL})
                 for _ in range(quantity):
                     cards.append(resolved_card)
         return cards
@@ -687,6 +705,8 @@ class ScryfallService:
                 card = self.resolve_deck_entry_card(clean_name or name)
             if not card:
                 continue
+            if not card.get("image_uris") and name:
+                card["image_uris"] = {"normal": CARD_PLACEHOLDER_IMAGE_URL}
             for _ in range(quantity):
                 cards.append(card)
 
@@ -869,9 +889,10 @@ class ScryfallService:
         bare_name_query = re.sub(r"^name:\s*", "", simplified_query).strip()
         bare_name_query = re.sub(r"\s+", " ", bare_name_query).strip().strip('"')
         contains_operator = ":" in simplified_query or bool(re.search(r"(^|\s)(or|and|not)(?=\s|$)", simplified_query))
-        if bare_name_query and filtered_remote_cards and not contains_operator:
+        combined_cards = list(local_search.data) + list(filtered_remote_cards)
+        if bare_name_query and combined_cards and not contains_operator:
             exact_name_matches = []
-            for card in filtered_remote_cards:
+            for card in combined_cards:
                 if not isinstance(card, dict):
                     continue
                 card_name = str(card.get("name") or "").strip()
@@ -2018,8 +2039,10 @@ def create_temp_app() -> Flask:
             payload = request.get_json(silent=True) or {}
             deck_data = payload.get("data") or ""
             deck_url = payload.get("url") or ""
-            fallback_card_by_card = payload.get("fallback_card_by_card", True)
-            group_cards = bool(payload.get("group") or payload.get("group_cards"))
+            fallback_card_by_card = coerce_bool(payload.get("fallback_card_by_card"), default=True)
+            group_cards = coerce_bool(payload.get("group"), default=False)
+            if "group_cards" in payload:
+                group_cards = coerce_bool(payload.get("group_cards"), default=group_cards)
             cards = service.normalize_deck_build_response(
                 deck_data,
                 deck_url=deck_url,

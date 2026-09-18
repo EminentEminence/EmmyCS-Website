@@ -1,6 +1,9 @@
 import json
+import tempfile
+from pathlib import Path
 
 import tempApp
+from custom_set_store import CustomSetStore
 from tempApp import ScryfallService, app, create_temp_app
 
 
@@ -120,6 +123,23 @@ def test_search_cards_collapses_to_best_exact_match_for_name_variants_like_silve
     assert result["id"] == "silver-wolf"
 
 
+def test_custom_set_store_avoids_substring_false_positives_for_multiword_name_queries():
+    with tempfile.TemporaryDirectory() as tmp_dir:
+        store = CustomSetStore(Path(tmp_dir))
+        store.save_uploaded_payload({
+            "set": {"code": "hsr", "name": "Honkai: Star Rail", "set_type": "custom"},
+            "cards": [
+                {"id": "silver-wolf", "oracle_id": "oracle-1", "name": "Silver Wolf, Lvl 999", "set": "hsr", "collector_number": "0024"},
+                {"id": "wolfir-silverheart", "oracle_id": "oracle-2", "name": "Wolfir Silverheart", "set": "avr", "collector_number": "206"},
+                {"id": "lambholt-silverpelt", "oracle_id": "oracle-3", "name": "Lambholt Elder // Silverpelt Werewolf", "set": "dka", "collector_number": "122"},
+            ],
+        })
+
+        result = store.search_cards("Silver Wolf", page=1, per_page=12)
+
+        assert [card["name"] for card in result.data] == ["Silver Wolf, Lvl 999"]
+
+
 def test_search_cards_preserves_full_scryfall_result_set_for_partial_queries():
     service = ScryfallService(api_base="https://example.invalid")
     service.custom_store.search_cards = lambda *args, **kwargs: type("LocalSearch", (), {"data": [], "has_more": False, "next_page": None, "total_cards": 0})()
@@ -187,6 +207,29 @@ def test_api_build_accepts_deck_text(monkeypatch):
     assert any('"Nickname": "Forest"' in line for line in lines)
     assert any('"Nickname": "Island"' in line for line in lines)
     assert any('"CustomDeck"' in line for line in lines)
+
+
+def test_api_build_respects_string_boolean_group_flags(monkeypatch):
+    custom_app = create_temp_app()
+
+    def fake_search_cards(self, params):
+        q = params.get("q", "")
+        if "Forest" in q:
+            return {"data": [{"object": "card", "id": "forest-1", "name": "Forest", "image_uris": {"normal": "https://example.invalid/forest.jpg"}}]}
+        if "Island" in q:
+            return {"data": [{"object": "card", "id": "island-1", "name": "Island", "image_uris": {"normal": "https://example.invalid/island.jpg"}}]}
+        return {"data": []}
+
+    monkeypatch.setattr(ScryfallService, "search_cards", fake_search_cards)
+
+    client = custom_app.test_client()
+    response = client.post("/api/build", json={"data": "1 Forest\n2 Island\n", "group": "false"})
+
+    assert response.status_code == 200
+    assert response.mimetype == "application/x-ndjson"
+    lines = [line for line in response.get_data(as_text=True).splitlines() if line.strip()]
+    assert len(lines) == 3
+    assert all('"ObjectStates"' not in line for line in lines)
 
 
 def test_api_build_can_group_cards_into_a_single_deck(monkeypatch):
